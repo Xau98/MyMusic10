@@ -120,7 +120,7 @@ public class MediaPlaybackService extends Service {
                 .setContentText(artist)
                 .setLargeIcon(largeImage)
                 .addAction(R.drawable.ic_previous_black_24dp, "previous", previousPendingIntent)
-              //  .addAction(isMusicPlay() ? isPlaying() ? R.drawable. : R.drawable.ic_p : R.mipmap.ic_play, "play", playPendingIntent)
+            .addAction(isMusicPlay()?isPlaying() ? R.drawable.ic_play_arrow_black_24dp:R.drawable.ic_pause : R.drawable.ic_pause, "play", playPendingIntent)
                 .addAction(R.drawable.ic_skip_next_black_24dp, "next", nextPendingIntent)
 
                 .setContentIntent(pendingIntent)
@@ -243,8 +243,6 @@ public class MediaPlaybackService extends Service {
             }
         }, 100);
     }
-
-
 
     @Override
     public IBinder onBind(Intent intent) {

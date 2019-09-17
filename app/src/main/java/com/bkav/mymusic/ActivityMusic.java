@@ -95,24 +95,20 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-        AllSongsFragment mAllSongsFragment = new AllSongsFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mAllSongsFragment).commit();
-        //   Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Toast.makeText(this, String.valueOf(isMyServiceRunning(-MediaPlaybackService.class)), Toast.LENGTH_SHORT).show();
         if (intentplay == null) {
             intentplay = new Intent(this, MediaPlaybackService.class);
             bindService(intentplay, mServiceConnection, Context.BIND_AUTO_CREATE);
             startService(intentplay);
         }
         Toast.makeText(this, mExitService + "2366", Toast.LENGTH_SHORT).show();
+         AllSongsFragment mAllSongsFragment = new AllSongsFragment();
+       getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mAllSongsFragment).commit();
+        //   Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
+
+
     }
+
+
 
     public void startServicee() {
         Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);

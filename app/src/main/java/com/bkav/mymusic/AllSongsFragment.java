@@ -46,9 +46,10 @@ public class AllSongsFragment extends BaseSongListFragment {
         music.Addsong(getContext());
         mSongViewModel = ViewModelProviders.of(this).get(SongViewModel.class);
         mSongViewModel.getmSong().observe(this, new Observer<List<Song>>() {
+
             @Override
             public void onChanged(List<Song> songs) {
-                setSong(songs);
+                setSongs(songs);
             }
         });
         return super.onCreateView(inflater,container, savedInstanceState);

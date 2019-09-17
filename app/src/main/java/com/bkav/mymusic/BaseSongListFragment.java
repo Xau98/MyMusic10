@@ -41,7 +41,7 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
     private  boolean mExitService = false;
     private  int mPosition=0;
     private Animation mAnimation;
-    private List<Song> songs;
+    private  List<Song> songs;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -78,9 +78,15 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
 //            editor.apply();
         }
     };
-    void setSong(List<Song> songs){
-        this.songs =songs;
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
+        mAdapter = new MusicAdapter(this, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mAdapter.setSong( songs);
     }
+
     void initView(View view) {
         mRecyclerView = view.findViewById(R.id.recyclerview);
         mClickPlay =view.findViewById(R.id.play);
@@ -94,19 +100,13 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_songs_fragment, container, false);
-
+        music =new Music();
         initView(view);
         Intent it = new Intent(getActivity(), MediaPlaybackService.class);
         getActivity().bindService(it, mServiceConnection, 0);
 
-        mAdapter = new MusicAdapter(this, getActivity());
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-          mAdapter.setSong( songs);
-        for(int i=0;i<songs.size();i++){
-            Log.d("log", songs.get(i).getTitle());
-        }
+
         mClickPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
