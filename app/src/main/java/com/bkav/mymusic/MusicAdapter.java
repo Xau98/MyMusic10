@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -57,6 +58,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         if (mSong != null) {
@@ -66,10 +68,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             holder.mNameSong.setText(current.getTitle());
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
             holder.mHours.setText(formmatTime.format(current.getDuration()));
+
             holder.mNameSong.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mClickItemView.clickItem(holder.mNameSong.getText() + "");
+                    mClickItemView.clickItem(Integer.parseInt(current.getId()+""),current.getTitle() ,current.getFile(),
+                                                               current.getArtist() , current.getDuration()  );
                 }
             });
             if (mMusicService != null) {
@@ -116,6 +120,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     }
 
     interface OnClickItemView {
-        void clickItem(String namSong);
+        void clickItem( int position , String title,String path ,String artist,int duration);
     }
 }

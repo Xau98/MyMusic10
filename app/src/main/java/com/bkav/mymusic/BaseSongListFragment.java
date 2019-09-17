@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnClickItemView {
+public class BaseSongListFragment extends Fragment implements MusicAdapter.OnClickItemView {
 
     private RecyclerView mRecyclerView;
     private MusicAdapter mAdapter;
@@ -37,10 +37,10 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
     private TextView mNameSong, mArtist;
     private ImageView mdisk;
     private ConstraintLayout constraintLayout;
-    private  MediaPlaybackService mMusicService;
-    private  boolean mExitService = false;
-    private  int mPosition=0;
-    private  List<Song> songs;
+    private MediaPlaybackService mMusicService;
+    private boolean mExitService = false;
+    private int mPosition = 0;
+    private List<Song> songs;
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -65,7 +65,7 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
 
             });
             // updateUI();
-            Log.d("log","879");
+            Log.d("log", "879");
             mExitService = true;
         }
 
@@ -86,23 +86,24 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
 
     void initView(View view) {
         mRecyclerView = view.findViewById(R.id.recyclerview);
-        mClickPlay =view.findViewById(R.id.play);
-        mArtist =view.findViewById(R.id.Artist);
-        mdisk =view.findViewById(R.id.disk);
-        mNameSong =view.findViewById(R.id.namePlaySong);
-        constraintLayout =view.findViewById(R.id.constraintLayout);
+        mClickPlay = view.findViewById(R.id.play);
+        mArtist = view.findViewById(R.id.Artist);
+        mdisk = view.findViewById(R.id.disk);
+        mNameSong = view.findViewById(R.id.namePlaySong);
+        constraintLayout = view.findViewById(R.id.constraintLayout);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_songs_fragment, container, false);
-        music =new Music();
+        music = new Music();
         initView(view);
         Intent it = new Intent(getActivity(), MediaPlaybackService.class);
         getActivity().bindService(it, mServiceConnection, 0);
-        Log.d("service", mMusicService+"//");
-        mAdapter = new MusicAdapter(this ,  getActivity());
+        Log.d("service", mMusicService + "//");
+
+        mAdapter = new MusicAdapter(this, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -114,9 +115,9 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
         mClickPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mMusicService.isPlaying()){
+                if (mMusicService.isPlaying()) {
                     mMusicService.pauseSong();
-                }else {
+                } else {
                     mMusicService.playingSong();
                 }
                 updateUI();
@@ -127,6 +128,7 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("ok", "lop");
                 MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -174,7 +176,7 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
 //        updateUI();
 //    }
 
-    void updateUI(){
+    void updateUI() {
         if (mMusicService.sMediaPlayer != null) {
             mMusicService.UpdateTime();
             if (mMusicService.sMediaPlayer.isPlaying()) {
@@ -183,10 +185,9 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
                 mClickPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
             }
             mNameSong.setText(mMusicService.getNameSong());
-            if( music.imageArtist(mMusicService.getLink())!=null) {
-                mdisk.setImageBitmap(music.imageArtist(mMusicService.getLink()));
-            }
-            else
+            if (mMusicService.imageArtist(mMusicService.getLink()) != null) {
+                mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getLink()));
+            } else
                 mdisk.setImageResource(R.drawable.default_cover_art);
             mNameSong.setText(mMusicService.getNameSong());
         }
@@ -195,24 +196,20 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
 
 
     @Override
-    public void clickItem(String position) {
-        for (int i = 0; i < songs.size(); i++) {
-            if (position.equals(songs.get(i).getTitle())) {
-                mMusicService.setmPosition((int) songs.get(i).getId());
-                mNameSong.setText( position);
-                mArtist.setText(mMusicService.getArtist());
-                mPosition = (int) songs.get(i).getId();
-                if (mMusicService.isMusicPlay()) {
-                    mMusicService.pauseSong();
-                }
-                mMusicService.playSong(songs.get(i).getFile());
-                mMusicService.sMediaPlayer.start();
-
-                Music.checkLoopSong(mPosition);
-            }
+    public void clickItem(int position, String title, String path, String astist, int duration) {
+        mMusicService.setmPosition(position);
+        mPosition = position;
+        if (mMusicService.isMusicPlay()) {
+            mMusicService.pauseSong();
         }
+        mMusicService.playSong(path);
+        mMusicService.sMediaPlayer.start();
+        mMusicService.setArtist(astist);
+        mMusicService.setNameSong(title);
+        mMusicService.setLink(path);
+        //   Music.checkLoopSong(mPosition);
+        mNameSong.setText(title);
+        mArtist.setText(astist);
         updateUI();
     }
-
-
 }

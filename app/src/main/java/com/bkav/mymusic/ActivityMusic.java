@@ -96,7 +96,7 @@ public class ActivityMusic extends AppCompatActivity
         //============================================
 
         AllSongsFragment mAllSongsFragment = new AllSongsFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mAllSongsFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
         // Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
     }
 

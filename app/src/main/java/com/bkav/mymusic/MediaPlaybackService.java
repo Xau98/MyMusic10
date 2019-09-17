@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -89,6 +90,18 @@ public class MediaPlaybackService extends Service {
         return artist;
     }
 
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public void setNameSong(String nameSong) {
+        this.nameSong = nameSong;
+    }
+
     public void showNotification(String nameSong, String artist) {
         Intent notificationIntent = new Intent(this, ActivityMusic.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -164,26 +177,13 @@ public class MediaPlaybackService extends Service {
     public void playSong(String path) {
         Uri content_uri = Uri.parse(path);
         sMediaPlayer = new MediaPlayer();
-
         try {
             sMediaPlayer.setDataSource(getApplicationContext(), content_uri);
             sMediaPlayer.prepare();
             sMediaPlayer.setWakeMode(getApplicationContext(),
                     PowerManager.PARTIAL_WAKE_LOCK);
             sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.Media.TITLE};
-            Cursor c = getApplication().getContentResolver().query(uri, projection, null, null, null);
-            if (c != null) {
-                while (c.moveToNext()) {
-                    link = c.getString(0);
-                    if (link.equals(path)) {
-                        artist = c.getString(1);
-                        nameSong = c.getString(2);
-                    }
-                }
-                c.close();
-            }
+
             //showNotification(nameSong, artist);
             listenner.onItemListenner();
         } catch (IOException e) {
@@ -242,6 +242,17 @@ public class MediaPlaybackService extends Service {
                 handler.postDelayed(this, 500);
             }
         }, 100);
+    }
+
+    public Bitmap imageArtist(String path){
+        Log.d("path", path+"//");
+        MediaMetadataRetriever mediaMetadataRetriever=new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(path);
+        byte [] data=mediaMetadataRetriever.getEmbeddedPicture();
+        if(data!=null){
+            return BitmapFactory.decodeByteArray(data, 0 , data.length);
+        }
+        return null;
     }
 
     @Override

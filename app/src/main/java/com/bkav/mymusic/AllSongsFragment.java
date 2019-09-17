@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,30 +42,47 @@ import java.util.List;
 
 public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getLoaderManager().initLoader(LOADER_ID, null, null);
-       setSongs(songs);
-        return super.onCreateView(inflater,container, savedInstanceState);
+
+        getLoaderManager().initLoader(LOADER_ID, null, this);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION};
 
-        return null;
+        CursorLoader mCursorLoader = new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        return mCursorLoader;
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor c) {
+        ArrayList<Song> sListMusic = new ArrayList<>();
+        int id = 0;
+        if (c != null) {
+            while (c.moveToNext()) {
+                String path = c.getString(0);
+                String album = c.getString(1);
+                String artist = c.getString(2);
+                String name = c.getString(3);
+                String duration = c.getString(4);
+                sListMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
+                id++;
+                Log.e("Name :" + name, " Album :" + album);
+                Log.e("Path :" + path, " Artist :" + artist + " Duration " + duration);
+            }
+            c.close();
+        }
+        setSongs(sListMusic);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
-
-
 }

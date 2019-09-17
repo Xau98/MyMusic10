@@ -1,12 +1,9 @@
 package com.bkav.mymusic;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
 public class Song {
-    private long id;
+    private int id;
+
     private  String title;
 
     private  String file;
@@ -15,7 +12,6 @@ public class Song {
 
     private int duration;
 
-    private  int love;
 
     public long getId() {
         return id;
@@ -38,19 +34,14 @@ public class Song {
         return duration;
     }
 
-    public int getLove() {
-        return love;
-    }
 
 
-    public Song(long id, String title, String file, String artist, int duration
-            , int love) {
+    public Song(int id, String title, String file, String artist, int duration  ) {
         this.title=title;
         this.id=id;
         this.file=file;
         this.artist = artist;
         this.duration= duration;
-        this.love=love;
     }
 }
 
