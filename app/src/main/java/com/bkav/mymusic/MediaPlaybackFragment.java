@@ -18,6 +18,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MediaPlaybackFragment extends Fragment {
 
@@ -62,6 +64,11 @@ public class MediaPlaybackFragment extends Fragment {
     };
 
     void updateUI() {
+        if(mMusicService.isPlaying()){
+            btPlay.setBackgroundResource(R.drawable.ic_pause);
+        }else {
+            btPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+        }
     }
 
     void initView(View view) {
@@ -74,10 +81,6 @@ public class MediaPlaybackFragment extends Fragment {
         btPrevious =view.findViewById(R.id.previous);
         btRepeat =view.findViewById(R.id.repeat);
         btShuffle= view.findViewById(R.id.shuffle);
-
-
-
-
 
 
     }
@@ -93,10 +96,23 @@ public class MediaPlaybackFragment extends Fragment {
         btPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "//"+mMusicService.getmPosition(), Toast.LENGTH_SHORT).show();
+                updateUI();
+
+            }
+        });
+        btListMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AllSongsFragment allSongsFragment = new AllSongsFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.framentContent, allSongsFragment);
+                fragmentTransaction.commit();
 
             }
         });
         return view;
     }
+
+
 }

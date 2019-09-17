@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,29 +30,41 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllSongsFragment extends BaseSongListFragment {
-    private  Music music;
-    private SongViewModel mSongViewModel;
+public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int LOADER_ID = 1;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        music = new Music();
-        music.Addsong(getContext());
-        mSongViewModel = ViewModelProviders.of(this).get(SongViewModel.class);
-        mSongViewModel.getmSong().observe(this, new Observer<List<Song>>() {
-
-            @Override
-            public void onChanged(List<Song> songs) {
-                setSongs(songs);
-            }
-        });
+        getLoaderManager().initLoader(LOADER_ID, null, null);
+       setSongs(songs);
         return super.onCreateView(inflater,container, savedInstanceState);
     }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
+    }
+
+
 }

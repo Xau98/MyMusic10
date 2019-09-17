@@ -40,8 +40,8 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
     private  MediaPlaybackService mMusicService;
     private  boolean mExitService = false;
     private  int mPosition=0;
-    private Animation mAnimation;
     private  List<Song> songs;
+
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -81,10 +81,7 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
 
     public void setSongs(List<Song> songs) {
         this.songs = songs;
-        mAdapter = new MusicAdapter(this, getActivity());
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter.setSong( songs);
+        mAdapter.setSong(songs);
     }
 
     void initView(View view) {
@@ -104,8 +101,15 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
         initView(view);
         Intent it = new Intent(getActivity(), MediaPlaybackService.class);
         getActivity().bindService(it, mServiceConnection, 0);
+        Log.d("service", mMusicService+"//");
+        mAdapter = new MusicAdapter(this ,  getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
+//        if(mMusicService!=null){
+//            Log.d("log tb", mMusicService.getNameSong());
+//            updateUI();
+//        }
 
         mClickPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,8 +120,10 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
                     mMusicService.playingSong();
                 }
                 updateUI();
+
             }
         });
+
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,9 +188,10 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
             }
             else
                 mdisk.setImageResource(R.drawable.default_cover_art);
+            mNameSong.setText(mMusicService.getNameSong());
         }
+        mAdapter.notifyDataSetChanged();
     }
-
 
 
     @Override
@@ -204,7 +211,6 @@ public class BaseSongListFragment  extends Fragment implements MusicAdapter.OnCl
                 Music.checkLoopSong(mPosition);
             }
         }
-
         updateUI();
     }
 

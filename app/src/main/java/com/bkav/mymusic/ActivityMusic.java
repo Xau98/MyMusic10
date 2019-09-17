@@ -16,6 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -37,10 +38,9 @@ import android.widget.Toast;
 
 public class ActivityMusic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public int po = 0;
     MediaPlaybackService mMusicService;
     boolean mExitService = false;
-    Intent intentplay;
+
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -77,7 +77,6 @@ public class ActivityMusic extends AppCompatActivity
 
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,31 +94,36 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-        if (intentplay == null) {
-            intentplay = new Intent(this, MediaPlaybackService.class);
-            bindService(intentplay, mServiceConnection, Context.BIND_AUTO_CREATE);
-            startService(intentplay);
-        }
-        Toast.makeText(this, mExitService + "2366", Toast.LENGTH_SHORT).show();
-         AllSongsFragment mAllSongsFragment = new AllSongsFragment();
-       getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mAllSongsFragment).commit();
-        //   Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
 
-
+        AllSongsFragment mAllSongsFragment = new AllSongsFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mAllSongsFragment).commit();
+        // Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
     }
 
-
-
-    public void startServicee() {
-        Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(it);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (isMyServiceRunning(MediaPlaybackService.class)) {
+            connectService();
+        } else {
+            Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startService(it);
+            }
+            connectService();
         }
     }
 
     public void connectService() {
         Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
         bindService(it, mServiceConnection, 0);
+    }
+
+    public void startService() {
+        Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(it);
+        }
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
