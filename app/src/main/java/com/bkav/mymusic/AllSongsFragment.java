@@ -42,7 +42,7 @@ import java.util.List;
 
 public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
-
+MusicAdapter mAdapter;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +55,6 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION};
-
         CursorLoader mCursorLoader = new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
         return mCursorLoader;
     }
@@ -83,6 +82,8 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        getLoaderManager().restartLoader(LOADER_ID, null, this);
+       if(mAdapter!=null){
+           mAdapter.setSong(new ArrayList<Song>());
+       }
     }
 }

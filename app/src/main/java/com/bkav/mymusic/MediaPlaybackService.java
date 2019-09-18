@@ -5,8 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -17,8 +17,9 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
@@ -26,8 +27,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 public class MediaPlaybackService extends Service {
+    private static final String NOTIFICATION_CHANNEL_ID = "1";
     private Binder binder = new MusicBinder();
-    MediaPlayer sMediaPlayer = null;
+       MediaPlayer sMediaPlayer = null;
     private Listenner listenner;
     private String link = "";
     private String artist = "";
@@ -38,39 +40,42 @@ public class MediaPlaybackService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel musicServiceChannel = new NotificationChannel(
-                    "0",
-                    "Music Service Channel",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            musicServiceChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(musicServiceChannel);
-        }
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (isMusicPlay()) {
-            Log.d("getAction", intent.getAction() + "");
-            switch (intent.getAction()) {
-                case "Previous":
-                    previousSong();
-                    break;
-                case "Next":
-                    nextSong();
-                    break;
-                case "Play":
-                    if (sMediaPlayer.isPlaying()) {
-                        pauseSong();
-                    } else {
-                        playingSong();
-                    }
-                    break;
-            }
-        }
-        // showNotification(nameSong,artist);
+//        if (intent != null) {
+//            String action = intent.getAction();
+//            if (!TextUtils.isEmpty(action)) {
+//                if (action.equals(ACTION_PLAY)) {
+//                  //  startPlay();
+//                }else if(action.equals(ACTION_PAUSE)) {
+//                  //  pausePlay();
+//                }else if(action.equals(ACTION_STOP)) {
+//                    //stopPlay();
+//                }
+//            }
+//        }
+//        if (isMusicPlay()) {
+//            Log.d("getAction", intent.getAction() + "");
+//            switch (intent.getAction()) {
+//                case "Previous":
+//                    previousSong();
+//                    break;
+//                case "Next":
+//                    nextSong();
+//                    break;
+//                case "Play":
+//                    if (sMediaPlayer.isPlaying()) {
+//                        pauseSong();
+//                    } else {
+//                        playingSong();
+//                    }
+//                    break;
+//            }
+//        }
+      showNotification(nameSong,artist,link);
         return START_NOT_STICKY;
     }
 
@@ -102,7 +107,10 @@ public class MediaPlaybackService extends Service {
         this.nameSong = nameSong;
     }
 
-    public void showNotification(String nameSong, String artist) {
+    public void showNotification(String nameSong, String artist,String path) {
+        createNotificationChannel();
+
+
         Intent notificationIntent = new Intent(this, ActivityMusic.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -124,25 +132,65 @@ public class MediaPlaybackService extends Service {
             nextPendingIntent = PendingIntent.getForegroundService(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
+        RemoteViews mCustomContentView =new RemoteViews(getPackageName(), R.layout.sub_notification);
+        RemoteViews mCustomBigContentView =new RemoteViews(getPackageName(), R.layout.notification);
 
-        Bitmap largeImage = BitmapFactory.decodeResource(getResources(), R.drawable.icon_disk2);
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_menu_send);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentTitle("Title Notification");
+        builder.setContentText("Text Notification");
+        builder.setStyle(new NotificationCompat.DecoratedCustomViewStyle());
+        builder.setCustomContentView(mCustomContentView);
+//        builder.addAction(R.drawable.ic_previous_black_24dp, "previous", previousPendingIntent)
+//                .addAction(isMusicPlay() ? isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play_arrow_black_24dp : R.drawable.ic_play_arrow_black_24dp, "play", playPendingIntent)
+//                .addAction(R.drawable.ic_skip_next_black_24dp, "next", nextPendingIntent);
+        builder.setCustomBigContentView(mCustomBigContentView);
+        startForeground(1, builder.build());
+        mCustomBigContentView.setOnClickPendingIntent(R.id.btnPrevious,previousPendingIntent);
+        mCustomBigContentView.setOnClickPendingIntent(R.id.btnPlay,playPendingIntent);
+        mCustomBigContentView.setOnClickPendingIntent(R.id.btnPrevious,nextPendingIntent);
 
-        Notification notification = new NotificationCompat.Builder(getApplicationContext(), "0")
-                .setSmallIcon(R.drawable.icon_disk2)
-                .setContentTitle(nameSong)
-                .setContentText(artist)
-                .setLargeIcon(largeImage)
-                .addAction(R.drawable.ic_previous_black_24dp, "previous", previousPendingIntent)
-            .addAction(isMusicPlay()?isPlaying() ? R.drawable.ic_play_arrow_black_24dp:R.drawable.ic_pause : R.drawable.ic_pause, "play", playPendingIntent)
-                .addAction(R.drawable.ic_skip_next_black_24dp, "next", nextPendingIntent)
+//        Bitmap largeImage = BitmapFactory.decodeResource(getResources(), R.drawable.icon_disk2);
+//        RemoteViews expandedView = new RemoteViews( getPackageName(), R.layout.notification1);
+//
+//        NotificationCompat.Builder mNotificationCompatBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+//        mNotificationCompatBuilder .setSmallIcon(R.drawable.ic_menu_send)
+//                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+//                .setCustomContentView(expandedView)
+//                .setCustomBigContentView(expandedView)
+//                .setContentIntent(pendingIntent) ;
+//        NotificationManager mNotificationManager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+//       // expandedView.setOnClickPendingIntent(R.id.btnPrevious,previousPendingIntent);
+//       // expandedView.setOnClickPendingIntent(R.id.btnPause,playPendingIntent);
+//      //  expandedView.setOnClickPendingIntent(R.id.btnPrevious,nextPendingIntent);
+//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+//        notificationManagerCompat.notify(1, mNotificationCompatBuilder.build());
 
-                .setContentIntent(pendingIntent)
-                .build();
-        startForeground(1, notification);
+        // expandedView.setImageViewBitmap(R.id.img,imageArtist(path));
+
+
+         //startForeground(1, notification1.build());
 
     }
 
-    public boolean isPlaying() {
+    void createNotificationChannel(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel musicServiceChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    "Music Service Channel",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            musicServiceChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(musicServiceChannel);
+        }
+    }
+
+
+
+
+        public boolean isPlaying() {
         if (sMediaPlayer.isPlaying())
             return true;
         else
@@ -156,7 +204,6 @@ public class MediaPlaybackService extends Service {
      public void seekToSong(int getProgress){
         sMediaPlayer.seekTo(getProgress);
      }
-
 
     public int getmPosition() {
         return mPosition;
@@ -184,12 +231,13 @@ public class MediaPlaybackService extends Service {
                     PowerManager.PARTIAL_WAKE_LOCK);
             sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-            //showNotification(nameSong, artist);
             listenner.onItemListenner();
         } catch (IOException e) {
             e.printStackTrace();
         }
         link=path;
+        Log.d("link", link+"//");
+      showNotification(nameSong, artist, link);
     }
 
     public void playingSong() {
@@ -197,7 +245,7 @@ public class MediaPlaybackService extends Service {
         if (listenner != null) {
             listenner.onItemListenner();
         }
-        showNotification(nameSong, artist);
+
     }
 
     public void pauseSong() {
@@ -205,7 +253,7 @@ public class MediaPlaybackService extends Service {
         if (listenner != null) {
             listenner.onItemListenner();
         }
-        showNotification(nameSong, artist);
+        showNotification(nameSong, artist,link);
     }
 
     void previousSong() {
@@ -213,6 +261,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public  void nextSong(){
+      Log.d("next","next");
         listenner.actionNext();
     }
 

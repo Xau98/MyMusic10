@@ -128,15 +128,10 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("ok", "lop");
-                MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.framentContent, mediaPlaybackFragment);
-                fragmentTransaction.commit();
+                MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mMediaPlaybackFragment).commit();
             }
         });
-
         return view;
     }
 
@@ -185,6 +180,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                 mClickPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
             }
             mNameSong.setText(mMusicService.getNameSong());
+            if(!mMusicService.getLink().equals(""))
             if (mMusicService.imageArtist(mMusicService.getLink()) != null) {
                 mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getLink()));
             } else
