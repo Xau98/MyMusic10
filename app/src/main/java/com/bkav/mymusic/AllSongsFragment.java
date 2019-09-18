@@ -72,12 +72,12 @@ MusicAdapter mAdapter;
                 String duration = c.getString(4);
                 sListMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
                 id++;
-                Log.e("Name :" + name, " Album :" + album);
-                Log.e("Path :" + path, " Artist :" + artist + " Duration " + duration);
+                Log.d("Name :" + name, " Album :" + album);
+                Log.d("Path :" + path, " Artist :" + artist + " Duration " + duration);
             }
             c.close();
         }
-        setSongs(sListMusic);
+        setSong(sListMusic);
     }
 
     @Override

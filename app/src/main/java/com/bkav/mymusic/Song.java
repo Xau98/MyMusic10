@@ -13,7 +13,7 @@ public class Song {
     private int duration;
 
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

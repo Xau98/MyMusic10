@@ -105,7 +105,6 @@ public class ActivityMusic extends AppCompatActivity
         mMediaPlaybackFragment = new MediaPlaybackFragment();
         AllSongsFragment mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
-        // Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
     }
 
     @Override

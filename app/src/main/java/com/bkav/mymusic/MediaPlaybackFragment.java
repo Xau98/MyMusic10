@@ -82,7 +82,6 @@ public class MediaPlaybackFragment extends Fragment {
         btRepeat =view.findViewById(R.id.repeat);
         btShuffle= view.findViewById(R.id.shuffle);
 
-
     }
 
 
@@ -108,6 +107,13 @@ public class MediaPlaybackFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.framentContent, allSongsFragment);
                 fragmentTransaction.commit();
+
+            }
+        });
+        btNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
 
             }
         });

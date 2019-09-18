@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -69,11 +70,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
             holder.mHours.setText(formmatTime.format(current.getDuration()));
 
-            holder.mNameSong.setOnClickListener(new View.OnClickListener() {
+            holder.mConstraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mClickItemView.clickItem(Integer.parseInt(current.getId()+""),current.getTitle() ,current.getFile(),
-                                                               current.getArtist() , current.getDuration()  );
+                    mClickItemView.clickItem(current);
                 }
             });
             if (mMusicService != null) {
@@ -108,10 +108,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         TextView mNameSong, mHours;
         ImageButton mMore;
         TextView mStt;
-        int mPosition = -1;
-
+        ConstraintLayout mConstraintLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            mConstraintLayout= itemView.findViewById(R.id.constraintLayoutItem);
             mNameSong = itemView.findViewById(R.id.nameSong);
             mHours = itemView.findViewById(R.id.hours);
             mStt = itemView.findViewById(R.id.stt);
@@ -120,7 +120,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     }
 
     interface OnClickItemView {
-        void clickItem( int position , String title,String path ,String artist,int duration);
-//        void clickItem( Song song);
+       // void clickItem( int position , String title,String path ,String artist,int duration);
+     void clickItem( Song song);
     }
 }

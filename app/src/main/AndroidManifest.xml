@@ -23,7 +23,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".MediaPlaybackService"/>
+        <service android:name=".MediaPlaybackService">
+            <intent-filter>
+                <action android:name="xxx.yyy.zzz.ACTION_PLAY" />
+                <action android:name="xxx.yyy.zzz.ACTION_PAUSE" />
+                <action android:name="xxx.yyy.zzz.ACTION_STOP" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

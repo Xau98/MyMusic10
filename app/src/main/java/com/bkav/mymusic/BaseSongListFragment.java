@@ -32,7 +32,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
     private RecyclerView mRecyclerView;
     private MusicAdapter mAdapter;
-    private Music music;
     private ImageButton mClickPlay;
     private TextView mNameSong, mArtist;
     private ImageView mdisk;
@@ -79,7 +78,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         }
     };
 
-    public void setSongs(List<Song> songs) {
+    public void setSong(List<Song> songs) {
         this.songs = songs;
         mAdapter.setSong(songs);
     }
@@ -91,13 +90,13 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mdisk = view.findViewById(R.id.disk);
         mNameSong = view.findViewById(R.id.namePlaySong);
         constraintLayout = view.findViewById(R.id.constraintLayout);
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_songs_fragment, container, false);
-        music = new Music();
         initView(view);
         Intent it = new Intent(getActivity(), MediaPlaybackService.class);
         getActivity().bindService(it, mServiceConnection, 0);
@@ -189,21 +188,20 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         }
         mAdapter.notifyDataSetChanged();
     }
+
     @Override
-    public void clickItem(int position, String title, String path, String astist, int duration) {
-        mMusicService.setmPosition(position);
-        mPosition = position;
+    public void clickItem(Song songs) {
+       mMusicService.setmPosition(songs.getId());
+        mPosition = songs.getId();
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
-        mMusicService.playSong(path);
-        mMusicService.sMediaPlayer.start();
-        mMusicService.setArtist(astist);
-        mMusicService.setNameSong(title);
-        mMusicService.setLink(path);
-        //   Music.checkLoopSong(mPosition);
-        mNameSong.setText(title);
-        mArtist.setText(astist);
+        mMusicService.playSong(songs);
+        mMusicService.setArtist(songs.getArtist());
+        mMusicService.setNameSong(songs.getTitle());
+        mMusicService.setLink(songs.getFile());
+        mNameSong.setText(songs.getTitle());
+        mArtist.setText(songs.getArtist());
         updateUI();
     }
 }
