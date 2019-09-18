@@ -193,8 +193,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         }
         mAdapter.notifyDataSetChanged();
     }
-
-
     @Override
     public void clickItem(int position, String title, String path, String astist, int duration) {
         mMusicService.setmPosition(position);
