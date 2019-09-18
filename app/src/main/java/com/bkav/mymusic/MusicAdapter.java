@@ -121,5 +121,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
     interface OnClickItemView {
         void clickItem( int position , String title,String path ,String artist,int duration);
+//        void clickItem( Song song);
     }
 }

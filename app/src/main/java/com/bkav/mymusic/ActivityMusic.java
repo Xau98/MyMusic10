@@ -4,6 +4,10 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +24,8 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -34,13 +40,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.view.Menu;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 public class ActivityMusic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     MediaPlaybackService mMusicService;
     boolean mExitService = false;
-
+    MediaPlaybackFragment mMediaPlaybackFragment;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -94,7 +101,8 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-
+        notificationManagerCompat =NotificationManagerCompat.from(this);
+        mMediaPlaybackFragment = new MediaPlaybackFragment();
         AllSongsFragment mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
         // Toast.makeText(this, mMusicService.mPosition+"////", Toast.LENGTH_SHORT).show();
@@ -229,6 +237,7 @@ public class ActivityMusic extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    private static final String NOTIFICATION_CHANNEL_ID = "1";
+    NotificationManagerCompat notificationManagerCompat;
 
 }
