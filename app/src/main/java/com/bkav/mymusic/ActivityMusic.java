@@ -48,29 +48,15 @@ public class ActivityMusic extends AppCompatActivity
     MediaPlaybackService mMusicService;
     boolean mExitService = false;
     MediaPlaybackFragment mMediaPlaybackFragment;
+    AllSongsFragment mAllSongsFragment;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
-            mMusicService.getListenner(new MediaPlaybackService.Listenner() {
-                @Override
-                public void onItemListenner() {
-                    updateUI();
-                }
-
-                @Override
-                public void actionPrevious() {
-                    //clickPrevious(btPrevious);
-                }
-
-                @Override
-                public void actionNext() {
-                    //clickNext(btNext);
-                }
-
-            });
-            updateUI();
+            mAllSongsFragment.setmService(mMusicService);
+            mMediaPlaybackFragment.setmMusicService(mMusicService);
+          //updateUI();
             mExitService = true;
         }
 
@@ -103,7 +89,7 @@ public class ActivityMusic extends AppCompatActivity
         //============================================
         notificationManagerCompat =NotificationManagerCompat.from(this);
         mMediaPlaybackFragment = new MediaPlaybackFragment();
-        AllSongsFragment mAllSongsFragment = new AllSongsFragment();
+         mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
     }
 
@@ -119,6 +105,7 @@ public class ActivityMusic extends AppCompatActivity
             }
             connectService();
         }
+
     }
 
     public void connectService() {

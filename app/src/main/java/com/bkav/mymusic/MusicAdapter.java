@@ -31,25 +31,15 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     private Context mContext;
     private OnClickItemView mClickItemView;
     private MediaPlaybackService mMusicService;
-    public ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
-            mMusicService = binder.getMusicBinder();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-        }
-    };
-
-    public MusicAdapter(OnClickItemView mClickItemView, Context context) {
+    public MusicAdapter(OnClickItemView mClickItemView, Context context ) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         this.mClickItemView = mClickItemView;
-        Intent it = new Intent(context, MediaPlaybackService.class);
-        context.bindService(it, serviceConnection, 0);
+
+    }
+
+    public void setmMusicService(MediaPlaybackService mMusicService) {
+        this.mMusicService = mMusicService;
     }
 
     @NonNull
@@ -62,6 +52,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
         if (mSong != null) {
             final Song current = mSong.get(position);
             holder.mStt.setText(current.getId() + "");

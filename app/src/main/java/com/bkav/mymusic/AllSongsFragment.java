@@ -42,7 +42,11 @@ import java.util.List;
 
 public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
-MusicAdapter mAdapter;
+    private MusicAdapter mAdapter;
+    public void setmService(MediaPlaybackService mService) {
+        this.mMusicService = mService;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

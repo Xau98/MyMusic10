@@ -36,30 +36,27 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private TextView mNameSong, mArtist;
     private ImageView mdisk;
     private ConstraintLayout constraintLayout;
-    private MediaPlaybackService mMusicService;
+    protected MediaPlaybackService mMusicService;
     private boolean mExitService = false;
     private int mPosition = 0;
     private List<Song> songs;
-
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
-            mMusicService.getListenner(new MediaPlaybackService.Listenner() {
+            mAdapter.setmMusicService(mMusicService);
+            mMusicService.setmListAllSong(songs);
+
+            mMusicService.getListenner(new MediaPlaybackService.Listenner() {// thua onclick
                 @Override
                 public void onItemListenner() {
                     updateUI();
                 }
 
                 @Override
-                public void actionPrevious() {
-                    //clickPrevious(btPrevious);
-                }
-
-                @Override
-                public void actionNext() {
-                    //clickNext(btNext);
+                public void actionNotification() {
+                    updateUI();
                 }
 
             });
@@ -90,6 +87,21 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mdisk = view.findViewById(R.id.disk);
         mNameSong = view.findViewById(R.id.namePlaySong);
         constraintLayout = view.findViewById(R.id.constraintLayout);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAdapter = new MusicAdapter(this, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent it = new Intent(getActivity(), MediaPlaybackService.class);
+        getActivity().bindService(it, mServiceConnection, 0);
 
     }
 
@@ -98,13 +110,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_songs_fragment, container, false);
         initView(view);
-        Intent it = new Intent(getActivity(), MediaPlaybackService.class);
-        getActivity().bindService(it, mServiceConnection, 0);
-        Log.d("service", mMusicService + "//");
 
-        mAdapter = new MusicAdapter(this, getActivity());
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
 
 //        if(mMusicService!=null){
 //            Log.d("log tb", mMusicService.getNameSong());
@@ -114,19 +122,24 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mClickPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mMusicService.isPlaying()) {
-                    mMusicService.pauseSong();
-                } else {
-                    mMusicService.playingSong();
+                if(mMusicService!=null) {
+                    if (mMusicService.isPlaying()) {
+                        mMusicService.pauseSong();
+                    } else {
+                        mMusicService.playingSong();
+                    }
+                    updateUI();
                 }
-                updateUI();
+                else {
 
+                }
             }
         });
 
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mMediaPlaybackFragment).commit();
             }
@@ -134,6 +147,15 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+//        while(mMusicService==null) {
+//            Intent it = new Intent(getActivity(), MediaPlaybackService.class);
+//            getActivity().bindService(it, mServiceConnection, 0);
+//            Log.d("service3", mMusicService + "//");
+//        }
+    }
 //    void updateSong() {
 //        final Handler handler = new Handler();
 //        handler.postDelayed(new Runnable() {
@@ -171,9 +193,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 //    }
 
     void updateUI() {
-        if (mMusicService.sMediaPlayer != null) {
+        if (mMusicService.isMusicPlay()) {
             mMusicService.UpdateTime();
-            if (mMusicService.sMediaPlayer.isPlaying()) {
+            if (mMusicService.isPlaying()) {
                 mClickPlay.setBackgroundResource(R.drawable.ic_pause);
             } else {
                 mClickPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
@@ -196,10 +218,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
-        mMusicService.playSong(songs);
-        mMusicService.setArtist(songs.getArtist());
-        mMusicService.setNameSong(songs.getTitle());
-        mMusicService.setLink(songs.getFile());
+        mMusicService.playSong(songs.getId());
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         updateUI();

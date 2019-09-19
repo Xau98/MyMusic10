@@ -26,8 +26,8 @@
         <service android:name=".MediaPlaybackService">
             <intent-filter>
                 <action android:name="xxx.yyy.zzz.ACTION_PLAY" />
-                <action android:name="xxx.yyy.zzz.ACTION_PAUSE" />
-                <action android:name="xxx.yyy.zzz.ACTION_STOP" />
+                <action android:name="xxx.yyy.zzz.ACTION_PERVIOUS" />
+                <action android:name="xxx.yyy.zzz.ACTION_NEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
