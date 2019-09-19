@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MediaPlaybackService extends Service {
     private static final String NOTIFICATION_CHANNEL_ID = "1";
@@ -34,13 +35,14 @@ public class MediaPlaybackService extends Service {
     public static final String ACTION_PLAY = "xxx.yyy.zzz.ACTION_PLAY";
     public static final String ACTION_NEXT = "xxx.yyy.zzz.ACTION_NEXT";
     private Binder binder = new MusicBinder();
-    private MediaPlayer sMediaPlayer = null;
+    private MediaPlayer sMediaPlayer = null;// sua static
     private Listenner listenner;
     private String link = "";
     private String artist = "";
     private String nameSong = "";
     private int mPositionCurrent = 0;
-    private int loop;
+    private int loopSong =0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
+    private boolean shuffleSong= false;
     private List<Song> mListAllSong;
 
     @Override
@@ -101,8 +103,20 @@ public class MediaPlaybackService extends Service {
         this.nameSong = nameSong;
     }
 
-    public List<Song> getmListAllSong() {
-        return mListAllSong;
+    public int getLoopSong() {
+        return loopSong;
+    }
+
+    public void setLoopSong(int loopSong) {
+        this.loopSong = loopSong;
+    }
+
+    public boolean isShuffleSong() {
+        return shuffleSong;
+    }
+
+    public void setShuffleSong(boolean shuffleSong) {
+        this.shuffleSong = shuffleSong;
     }
 
     public void setmListAllSong(List<Song> mListAllSong) {
@@ -160,28 +174,6 @@ public class MediaPlaybackService extends Service {
         } else
             mCustomContentView.setImageViewResource( R.id.img,R.drawable.default_cover_art );
         startForeground(1, builder.build());
-
-
-
-//        Bitmap largeImage = BitmapFactory.decodeResource(getResources(), R.drawable.icon_disk2);
-//        RemoteViews expandedView = new RemoteViews( getPackageName(), R.layout.notification1);
-//
-//        NotificationCompat.Builder mNotificationCompatBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
-//        mNotificationCompatBuilder .setSmallIcon(R.drawable.ic_menu_send)
-//                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-//                .setCustomContentView(expandedView)
-//                .setCustomBigContentView(expandedView)
-//                .setContentIntent(pendingIntent) ;
-//        NotificationManager mNotificationManager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
-//       // expandedView.setOnClickPendingIntent(R.id.btnPrevious,previousPendingIntent);
-//       // expandedView.setOnClickPendingIntent(R.id.btnPause,playPendingIntent);
-//      //  expandedView.setOnClickPendingIntent(R.id.btnPrevious,nextPendingIntent);
-//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-//        notificationManagerCompat.notify(1, mNotificationCompatBuilder.build());
-
-        // expandedView.setImageViewBitmap(R.id.img,imageArtist(path));
-        //startForeground(1, notification1.build());
-
     }
 
     public void createNotificationChannel() {
@@ -204,10 +196,6 @@ public class MediaPlaybackService extends Service {
             return false;
     }
 
-    public int getDurationSong() {
-        return sMediaPlayer.getDuration();
-    }
-
     public void seekToSong(int getProgress) {
         sMediaPlayer.seekTo(getProgress);
     }
@@ -220,12 +208,12 @@ public class MediaPlaybackService extends Service {
         this.mPositionCurrent = mPosition;
     }
 
-    public int getLoop() {
-        return loop;
+    public  int  getCurrentPositionSong(){
+        return  sMediaPlayer.getCurrentPosition();
     }
 
-    public void setLoop(int loop) {
-        this.loop = loop;
+    public  int getDurationSong(){
+        return  sMediaPlayer.getDuration();
     }
 
     public void playSong(int mPositionCurrent) {
@@ -256,7 +244,11 @@ public class MediaPlaybackService extends Service {
     }
 
     public void playingSong() {
-        sMediaPlayer.start();
+        if(sMediaPlayer.isPlaying()){
+            sMediaPlayer.pause();
+        }else {
+            sMediaPlayer.start();
+        }
         if (listenner != null) {
             listenner.onItemListenner();
         }
@@ -271,21 +263,39 @@ public class MediaPlaybackService extends Service {
         showNotification(nameSong, artist, link);
     }
 
-    void previousSong() {
+    public void previousSong() {
         sMediaPlayer.pause();
-        if(mPositionCurrent>0)
-           mPositionCurrent--;
+        if(shuffleSong==true){
+            mPositionCurrent=actionShuffleSong();
+        }else {
+            if (mPositionCurrent == 0){
+                mPositionCurrent=mListAllSong.size()-1;
+            }else
+                mPositionCurrent--;
+        }
         playSong(mPositionCurrent);
         listenner.actionNotification();
-
     }
 
     public void nextSong() {
         sMediaPlayer.pause();
-        if(mPositionCurrent < mListAllSong.size()-1)
-          mPositionCurrent++;
+
+        if(shuffleSong==true){
+            mPositionCurrent=actionShuffleSong();
+        }else {
+            if (mPositionCurrent == mListAllSong.size() - 1)
+                mPositionCurrent=0;
+            else
+                mPositionCurrent++;
+        }
         playSong(mPositionCurrent);
         listenner.actionNotification();
+    }
+
+    public int actionShuffleSong(){
+        Random rd=new Random();
+        int result=rd.nextInt(mListAllSong.size()-1);
+        return result;
     }
 
     public String getDuration() {
@@ -304,16 +314,34 @@ public class MediaPlaybackService extends Service {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer media) {
 
-
-                    }
-                });
                 handler.postDelayed(this, 500);
             }
         }, 100);
+    }
+
+    public void onCompletionSong(){
+        sMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer media) {
+                sMediaPlayer.pause();
+                if(loopSong==0){
+                    if(mPositionCurrent < mListAllSong.size()-1)
+                       mPositionCurrent++;
+                }
+                else {
+                    if(loopSong==-1){
+                        if(mPositionCurrent == mListAllSong.size()-1){
+                            mPositionCurrent=0;
+                        }else {
+                            mPositionCurrent++;
+                        }
+                    }
+                }
+                playSong(mPositionCurrent);
+                listenner.actionNotification();
+            }
+        });
     }
 
     public Bitmap imageArtist(String path) {

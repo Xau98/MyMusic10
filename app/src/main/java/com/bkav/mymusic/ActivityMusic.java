@@ -55,8 +55,6 @@ public class ActivityMusic extends AppCompatActivity
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
             mAllSongsFragment.setmService(mMusicService);
-            mMediaPlaybackFragment.setmMusicService(mMusicService);
-          //updateUI();
             mExitService = true;
         }
 
@@ -65,10 +63,6 @@ public class ActivityMusic extends AppCompatActivity
 
         }
     };
-
-    void updateUI() {
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +99,6 @@ public class ActivityMusic extends AppCompatActivity
             }
             connectService();
         }
-
     }
 
     public void connectService() {

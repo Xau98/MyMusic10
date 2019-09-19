@@ -111,9 +111,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         View view = inflater.inflate(R.layout.all_songs_fragment, container, false);
         initView(view);
 
-
-
-
 //        if(mMusicService!=null){
 //            Log.d("log tb", mMusicService.getNameSong());
 //            updateUI();
@@ -141,7 +138,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             public void onClick(View view) {
 
                 MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mMediaPlaybackFragment).commit();
+                mMediaPlaybackFragment.setmMusicService(mMusicService);
+                getActivity().getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mMediaPlaybackFragment).addToBackStack("back").commit();
+
             }
         });
         return view;
@@ -200,12 +199,13 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             } else {
                 mClickPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
             }
-            mNameSong.setText(mMusicService.getNameSong());
+
             if(!mMusicService.getLink().equals(""))
             if (mMusicService.imageArtist(mMusicService.getLink()) != null) {
                 mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getLink()));
             } else
                 mdisk.setImageResource(R.drawable.default_cover_art);
+
             mNameSong.setText(mMusicService.getNameSong());
         }
         mAdapter.notifyDataSetChanged();
