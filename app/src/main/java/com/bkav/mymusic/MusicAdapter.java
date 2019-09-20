@@ -69,6 +69,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             });
             if (mMusicService != null) {
                 if (mMusicService.getNameSong().equals(mSong.get(position).getTitle())) {
+                    holder.mStt.setText("");
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                     holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
                 }else {

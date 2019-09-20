@@ -59,30 +59,34 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION};
-        CursorLoader mCursorLoader = new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-        return mCursorLoader;
+        CursorLoader cursorLoader = new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        return cursorLoader;
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor c) {
-        ArrayList<Song> sListMusic = new ArrayList<>();
+        ArrayList<Song> listMusic = new ArrayList<>();
         int id = 0;
         if (c != null) {
-            while (c.moveToNext()) {
+            c.moveToFirst();
+            do{
                 String path = c.getString(0);
                 String album = c.getString(1);
                 String artist = c.getString(2);
                 String name = c.getString(3);
                 String duration = c.getString(4);
-                sListMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
+                listMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
                 id++;
-                Log.d("Name :" + name, " Album :" + album);
+                Log.d(TAG , " Album :" + album);
                 Log.d("Path :" + path, " Artist :" + artist + " Duration " + duration);
-            }
-            c.close();
+            }while (c.moveToNext());
         }
-        setSong(sListMusic);
+        Log.d(TAG, "onLoadFinished: "+c.getCount());
+        Log.d(TAG, "onLoadFinished: "+listMusic.size());
+        setSong(listMusic);
     }
+
+    private static final String TAG = "AllSongsFragment";
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {

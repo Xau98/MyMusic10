@@ -136,11 +136,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
                 mMediaPlaybackFragment.setmMusicService(mMusicService);
-                getActivity().getSupportFragmentManager().beginTransaction().add(R.id.framentContent, mMediaPlaybackFragment).addToBackStack("back").commit();
-
+                getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.framentContent, mMediaPlaybackFragment).commit();
             }
         });
         return view;

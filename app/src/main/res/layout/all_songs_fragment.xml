@@ -7,12 +7,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
-        android:layout_width="417dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginLeft="0dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.604"
@@ -25,9 +22,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_height="61dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -35,46 +30,57 @@
 
         <ImageView
             android:id="@+id/disk"
-            android:layout_margin="10dp"
-            android:padding="5dp"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
+            android:layout_width="47dp"
+            android:layout_height="47dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:src="@drawable/icon_disk2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:ignore="MissingConstraints" />
 
         <TextView
             android:id="@+id/namePlaySong"
             android:layout_width="257dp"
-            android:layout_height="29dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="17dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:text="Name Song"
-            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textSize="12dp"
             app:layout_constraintEnd_toStartOf="@+id/play"
             app:layout_constraintStart_toEndOf="@+id/disk"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            />
 
         <TextView
             android:id="@+id/Artist"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:maxWidth="220dp"
             android:text="TextView"
-            android:textSize="16dp"
+            android:textSize="10dp"
+            android:maxLength="225"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/play"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.042"
             app:layout_constraintStart_toEndOf="@+id/disk"
             app:layout_constraintTop_toBottomOf="@+id/namePlaySong"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
             android:id="@+id/play"
