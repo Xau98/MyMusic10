@@ -81,8 +81,6 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 Log.d("Path :" + path, " Artist :" + artist + " Duration " + duration);
             }while (c.moveToNext());
         }
-        Log.d(TAG, "onLoadFinished: "+c.getCount());
-        Log.d(TAG, "onLoadFinished: "+listMusic.size());
         setSong(listMusic);
     }
 

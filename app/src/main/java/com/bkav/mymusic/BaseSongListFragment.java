@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -128,7 +129,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_songs_fragment, container, false);
         initView(view);
-
+        ((AppCompatActivity) getActivity() ).getSupportActionBar().show();
         mClickPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,6 +174,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                 mdisk.setImageResource(R.drawable.default_cover_art);
 
             mNameSong.setText(mMusicService.getNameSong());
+            mArtist.setText(mMusicService.getArtist());
         }
         mAdapter.notifyDataSetChanged();
     }

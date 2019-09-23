@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -44,11 +45,22 @@ public class MediaPlaybackService extends Service {
     private int loopSong = 0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
     private boolean shuffleSong = false;
     private List<Song> mListAllSong;
-
+    private SharedPreferences mSharedPreferences;
+    private String mNameSharepre = "com.example.music";
     @Override
     public void onCreate() {
         super.onCreate();
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt("position", getmPosition());
+        editor.putString("nameSong", getNameSong()+"");
+        editor.apply();
     }
 
     @Override

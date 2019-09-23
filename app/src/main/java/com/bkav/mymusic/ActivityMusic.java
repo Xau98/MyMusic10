@@ -60,12 +60,6 @@ public class ActivityMusic extends AppCompatActivity
             mMusicService = binder.getMusicBinder();
             mAllSongsFragment.setmService(mMusicService);
             mExitService = true;
-//            mSharedPreferences = getSharedPreferences(mNameSharepre, MODE_PRIVATE);
-//            int index = mSharedPreferences.getInt("play", 1);
-//            String mNameSongRecently = mSharedPreferences.getString("mNameSong","Name Song");
-//            mMusicService.setmPosition(index);
-//            mMusicService.setNameSong(mNameSongRecently);
-//            Log.d("share", index+"//"+mNameSongRecently);
         }
 
         @Override
@@ -91,10 +85,14 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-
+//        mSharedPreferences = getSharedPreferences(mNameSharepre, MODE_PRIVATE);
+//        int index = mSharedPreferences.getInt("position", 1);
+//        String mNameSongRecently = mSharedPreferences.getString("nameSong","Name Song");
+//        Log.d("share1", index+"//"+mNameSongRecently);
         mMediaPlaybackFragment = new MediaPlaybackFragment();
         mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+
     }
 
     @Override
@@ -111,25 +109,10 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        mSharedPreferences = getSharedPreferences(mNameSharepre, MODE_PRIVATE);
-//        int index = mSharedPreferences.getInt("play", 1);
-//        String mNameSongRecently = mSharedPreferences.getString("mNameSong","Name Song");
-//        Log.d("share", index+"//"+mNameSongRecently);
-//        mMusicService.setmPosition(index);
-//        mMusicService.setNameSong(mNameSongRecently);
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
-//        SharedPreferences.Editor editor = mSharedPreferences.edit();
-//        editor.putInt("play", mMusicService.getmPosition());
-//        editor.putString("nameSong",mMusicService.getNameSong()+"");
-//        editor.apply();
+
     }
 
     public void connectService() {
@@ -211,9 +194,7 @@ public class ActivityMusic extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
