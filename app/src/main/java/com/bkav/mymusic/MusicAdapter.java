@@ -1,5 +1,6 @@
 package com.bkav.mymusic;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -81,6 +82,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             holder.mNameSong.setText("No Song");
         }
     }
+
 
     @Override
     public int getItemCount() {

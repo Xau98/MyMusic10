@@ -41,8 +41,8 @@ public class MediaPlaybackService extends Service {
     private String artist = "";
     private String nameSong = "";
     private int mPositionCurrent = 0;
-    private int loopSong =0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
-    private boolean shuffleSong= false;
+    private int loopSong = 0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
+    private boolean shuffleSong = false;
     private List<Song> mListAllSong;
 
     @Override
@@ -71,7 +71,7 @@ public class MediaPlaybackService extends Service {
                     break;
             }
         }
-       // showNotification(nameSong, artist, link);
+        // showNotification(nameSong, artist, link);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -161,18 +161,18 @@ public class MediaPlaybackService extends Service {
         mCustomBigContentView.setOnClickPendingIntent(R.id.btnPlay, playPendingIntent);
         mCustomBigContentView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
         if (imageArtist(path) != null) {
-            mCustomBigContentView.setImageViewBitmap( R.id.img,imageArtist(path));
+            mCustomBigContentView.setImageViewBitmap(R.id.img, imageArtist(path));
         } else
-            mCustomBigContentView.setImageViewResource( R.id.img,R.drawable.default_cover_art );
+            mCustomBigContentView.setImageViewResource(R.id.img, R.drawable.default_cover_art);
 /////========
         mCustomContentView.setImageViewResource(R.id.btnPlay, isMusicPlay() ? isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play_arrow_black_24dp : R.drawable.ic_play_arrow_black_24dp);
         mCustomContentView.setOnClickPendingIntent(R.id.btnPrevious, previousPendingIntent);
         mCustomContentView.setOnClickPendingIntent(R.id.btnPlay, playPendingIntent);
         mCustomContentView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
         if (imageArtist(path) != null) {
-            mCustomContentView.setImageViewBitmap( R.id.img,imageArtist(path));
+            mCustomContentView.setImageViewBitmap(R.id.img, imageArtist(path));
         } else
-            mCustomContentView.setImageViewResource( R.id.img,R.drawable.default_cover_art );
+            mCustomContentView.setImageViewResource(R.id.img, R.drawable.default_cover_art);
         startForeground(1, builder.build());
     }
 
@@ -208,12 +208,12 @@ public class MediaPlaybackService extends Service {
         this.mPositionCurrent = mPosition;
     }
 
-    public  int  getCurrentPositionSong(){
-        return  sMediaPlayer.getCurrentPosition();
+    public int getCurrentPositionSong() {
+        return sMediaPlayer.getCurrentPosition();
     }
 
-    public  int getDurationSong(){
-        return  sMediaPlayer.getDuration();
+    public int getDurationSong() {
+        return sMediaPlayer.getDuration();
     }
 
     public void playSong(int mPositionCurrent) {
@@ -238,15 +238,13 @@ public class MediaPlaybackService extends Service {
         link = mListAllSong.get(mPositionCurrent).getFile();
         nameSong = mListAllSong.get(mPositionCurrent).getTitle();
         artist = mListAllSong.get(mPositionCurrent).getArtist();
-        Log.d("link", link + "//");
-        Log.d("list", mListAllSong.get(mPositionCurrent).getTitle() + "/.");
         showNotification(mListAllSong.get(mPositionCurrent).getTitle(), mListAllSong.get(mPositionCurrent).getArtist(), link);
     }
 
     public void playingSong() {
-        if(sMediaPlayer.isPlaying()){
+        if (sMediaPlayer.isPlaying()) {
             sMediaPlayer.pause();
-        }else {
+        } else {
             sMediaPlayer.start();
         }
         if (listenner != null) {
@@ -265,26 +263,31 @@ public class MediaPlaybackService extends Service {
 
     public void previousSong() {
         sMediaPlayer.pause();
-        if(shuffleSong==true){
-            mPositionCurrent=actionShuffleSong();
-        }else {
-            if (mPositionCurrent == 0){
-                mPositionCurrent=mListAllSong.size()-1;
-            }else
-                mPositionCurrent--;
+        if (getCurrentPositionSong() <= 3000) {
+            if (shuffleSong == true) {
+                mPositionCurrent = actionShuffleSong();
+            } else {
+                if (mPositionCurrent == 0) {
+                    mPositionCurrent = mListAllSong.size() - 1;
+                } else
+                    mPositionCurrent--;
+            }
+            playSong(mPositionCurrent);
+            listenner.actionNotification();
         }
-        playSong(mPositionCurrent);
-        listenner.actionNotification();
+        else {
+            playSong(mPositionCurrent);
+        }
     }
 
     public void nextSong() {
         sMediaPlayer.pause();
 
-        if(shuffleSong==true){
-            mPositionCurrent=actionShuffleSong();
-        }else {
+        if (shuffleSong == true) {
+            mPositionCurrent = actionShuffleSong();
+        } else {
             if (mPositionCurrent == mListAllSong.size() - 1)
-                mPositionCurrent=0;
+                mPositionCurrent = 0;
             else
                 mPositionCurrent++;
         }
@@ -292,9 +295,9 @@ public class MediaPlaybackService extends Service {
         listenner.actionNotification();
     }
 
-    public int actionShuffleSong(){
-        Random rd=new Random();
-        int result=rd.nextInt(mListAllSong.size()-1);
+    public int actionShuffleSong() {
+        Random rd = new Random();
+        int result = rd.nextInt(mListAllSong.size() - 1);
         return result;
     }
 
@@ -320,20 +323,19 @@ public class MediaPlaybackService extends Service {
         }, 100);
     }
 
-    public void onCompletionSong(){
+    public void onCompletionSong() {
         sMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer media) {
                 sMediaPlayer.pause();
-                if(loopSong==0){
-                    if(mPositionCurrent < mListAllSong.size()-1)
-                       mPositionCurrent++;
-                }
-                else {
-                    if(loopSong==-1){
-                        if(mPositionCurrent == mListAllSong.size()-1){
-                            mPositionCurrent=0;
-                        }else {
+                if (loopSong == 0) {
+                    if (mPositionCurrent < mListAllSong.size() - 1)
+                        mPositionCurrent++;
+                } else {
+                    if (loopSong == -1) {
+                        if (mPositionCurrent == mListAllSong.size() - 1) {
+                            mPositionCurrent = 0;
+                        } else {
                             mPositionCurrent++;
                         }
                     }

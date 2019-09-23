@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,10 +46,13 @@ import android.widget.Toast;
 
 public class ActivityMusic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    MediaPlaybackService mMusicService;
-    boolean mExitService = false;
-    MediaPlaybackFragment mMediaPlaybackFragment;
-    AllSongsFragment mAllSongsFragment;
+    private MediaPlaybackService mMusicService;
+    private boolean mExitService = false;
+    private MediaPlaybackFragment mMediaPlaybackFragment;
+    private AllSongsFragment mAllSongsFragment;
+    private SharedPreferences mSharedPreferences;
+    private String mNameSharepre = "com.example.music";
+
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -56,6 +60,12 @@ public class ActivityMusic extends AppCompatActivity
             mMusicService = binder.getMusicBinder();
             mAllSongsFragment.setmService(mMusicService);
             mExitService = true;
+//            mSharedPreferences = getSharedPreferences(mNameSharepre, MODE_PRIVATE);
+//            int index = mSharedPreferences.getInt("play", 1);
+//            String mNameSongRecently = mSharedPreferences.getString("mNameSong","Name Song");
+//            mMusicService.setmPosition(index);
+//            mMusicService.setNameSong(mNameSongRecently);
+//            Log.d("share", index+"//"+mNameSongRecently);
         }
 
         @Override
@@ -81,9 +91,9 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-        notificationManagerCompat =NotificationManagerCompat.from(this);
+
         mMediaPlaybackFragment = new MediaPlaybackFragment();
-         mAllSongsFragment = new AllSongsFragment();
+        mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
     }
 
@@ -101,16 +111,30 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        mSharedPreferences = getSharedPreferences(mNameSharepre, MODE_PRIVATE);
+//        int index = mSharedPreferences.getInt("play", 1);
+//        String mNameSongRecently = mSharedPreferences.getString("mNameSong","Name Song");
+//        Log.d("share", index+"//"+mNameSongRecently);
+//        mMusicService.setmPosition(index);
+//        mMusicService.setNameSong(mNameSongRecently);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        SharedPreferences.Editor editor = mSharedPreferences.edit();
+//        editor.putInt("play", mMusicService.getmPosition());
+//        editor.putString("nameSong",mMusicService.getNameSong()+"");
+//        editor.apply();
+    }
+
     public void connectService() {
         Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
         bindService(it, mServiceConnection, 0);
-    }
-
-    public void startService() {
-        Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(it);
-        }
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -203,8 +227,7 @@ public class ActivityMusic extends AppCompatActivity
         if (id == R.id.nav_favorite) {
             Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_playlist) {
-
-            Toast.makeText(this, "Play List", Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
 
         } else if (id == R.id.nav_share) {
 
@@ -216,7 +239,6 @@ public class ActivityMusic extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    private static final String NOTIFICATION_CHANNEL_ID = "1";
-    NotificationManagerCompat notificationManagerCompat;
+
 
 }
