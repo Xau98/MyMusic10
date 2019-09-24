@@ -11,31 +11,28 @@
         android:layout_marginRight="80dp"
         />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btnPrevious"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="#ffffff"
         android:src="@drawable/ic_previous_black_24dp"
         android:layout_marginTop="7dp"
         />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btnPlay"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="20dp"
-        android:background="#ffffff"
         android:src="@drawable/ic_play_arrow_black_24dp"
         android:layout_marginTop="7dp"
         />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btnNext"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="20dp"
-        android:background="#ffffff"
         android:src="@drawable/ic_skip_next_black_24dp"
         android:layout_marginTop="7dp"
         />

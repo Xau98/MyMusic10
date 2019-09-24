@@ -41,20 +41,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ca sĩ"
-                android:textSize="10dp" />
+                android:textSize="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="Mussic"
-                android:textSize="10dp" />
-
+                android:textSize="12dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#212121"
+                />
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="68dp"
+                android:layout_width="212dp"
+                android:layout_height="59dp"
                 android:orientation="horizontal"
-                android:padding="10dp">
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp">
 
 
                 <ImageButton

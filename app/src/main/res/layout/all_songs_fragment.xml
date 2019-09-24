@@ -16,15 +16,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
     </androidx.recyclerview.widget.RecyclerView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="61dp"
+        android:background="#fafafa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:elevation="@dimen/activity_horizontal_margin"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -44,37 +45,41 @@
 
         <TextView
             android:id="@+id/namePlaySong"
-            android:layout_width="257dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="17dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="13dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:text="Name Song"
-            android:textStyle="bold"
-            android:textSize="12dp"
-            app:layout_constraintEnd_toStartOf="@+id/play"
-            app:layout_constraintStart_toEndOf="@+id/disk"
-            app:layout_constraintTop_toTopOf="parent"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            />
+
+            android:text="Name Song"
+            android:textColor="#212121"
+            android:textSize="18dp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/Artist"
+            app:layout_constraintEnd_toStartOf="@+id/play"
+            app:layout_constraintStart_toEndOf="@+id/disk"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/Artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="16dp"
             android:maxWidth="220dp"
-            android:text="TextView"
-            android:textSize="10dp"
             android:maxLength="225"
+            android:text="TextView"
+            android:textSize="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/play"
             app:layout_constraintHorizontal_bias="0.042"

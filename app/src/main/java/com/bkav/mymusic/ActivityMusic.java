@@ -51,8 +51,7 @@ public class ActivityMusic extends AppCompatActivity
     private boolean mExitService = false;
     private MediaPlaybackFragment mMediaPlaybackFragment;
     private AllSongsFragment mAllSongsFragment;
-    private SharedPreferences mSharedPreferences;
-    private  String SHARED_PREFERENCES_NAME="com.bkav.mymusic";
+
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -67,12 +66,6 @@ public class ActivityMusic extends AppCompatActivity
             Toast.makeText(mMusicService, "dis", Toast.LENGTH_SHORT).show();
         }
     };
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +88,6 @@ public class ActivityMusic extends AppCompatActivity
         mMediaPlaybackFragment = new MediaPlaybackFragment();
         mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
-
     }
 
     @Override
@@ -115,6 +107,7 @@ public class ActivityMusic extends AppCompatActivity
             startService(it);
         }
     }
+
     public void connectService() {
         Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
         bindService(it, mServiceConnection, 0);
@@ -179,21 +172,6 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -211,7 +189,5 @@ public class ActivityMusic extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
 
 }

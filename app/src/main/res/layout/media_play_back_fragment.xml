@@ -86,7 +86,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="Name Song"
-            android:textSize="15dp"
+            android:textSize="18dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/listMusic"
             app:layout_constraintStart_toEndOf="@+id/disk"
@@ -98,22 +98,20 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="1dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="15dp"
             android:ellipsize="marquee"
             android:gravity="center|left|center_vertical"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="name Artist"
-            android:textSize="9dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="15dp"
             app:layout_constraintEnd_toStartOf="@+id/listMusic"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/disk"
-            app:layout_constraintTop_toBottomOf="@+id/namesong"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@+id/namesong" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -163,12 +161,15 @@
                 android:id="@+id/Play"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginStart="37dp"
-                android:layout_marginLeft="37dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
                 android:layout_marginBottom="11dp"
                 android:background="#f0f1ed"
                 android:padding="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/next"
                 app:layout_constraintStart_toEndOf="@+id/previous" />
 
             <ImageView
@@ -177,21 +178,27 @@
                 android:layout_height="40dp"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginBottom="16dp"
                 android:padding="2dp"
                 android:src="@drawable/ic_skip_previous_black_50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/Play"
                 app:layout_constraintStart_toEndOf="@+id/like" />
 
             <ImageView
                 android:id="@+id/next"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginStart="37dp"
-                android:layout_marginLeft="37dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginEnd="42dp"
+                android:layout_marginRight="42dp"
                 android:layout_marginBottom="15dp"
                 android:src="@drawable/ic_skip_next_black_50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/dislike"
                 app:layout_constraintStart_toEndOf="@+id/Play" />
 
             <ImageView
@@ -210,16 +217,13 @@
                 android:id="@+id/dislike"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginStart="42dp"
-                android:layout_marginLeft="42dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="15dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_dislike"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/next" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
 
             <TextView

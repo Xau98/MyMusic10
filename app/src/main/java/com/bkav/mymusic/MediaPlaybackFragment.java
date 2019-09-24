@@ -88,6 +88,7 @@ public class MediaPlaybackFragment extends Fragment {
         btPrevious = view.findViewById(R.id.previous);
         btRepeat = view.findViewById(R.id.repeat);
         btShuffle = view.findViewById(R.id.shuffle);
+        mNameSong.setSelected(true);
 
     }
 

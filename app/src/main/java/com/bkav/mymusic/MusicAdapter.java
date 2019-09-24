@@ -61,21 +61,27 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         if (mSong != null) {
-            final Song current = mSong.get(position);
+            Song current = mSong.get(position);
 
-            holder.mStt.setText(position + "");
-            Log.d(current.getId() + "show", current.getTitle());
+            if(mListSong !=null){
+                 current = mListSong.get(position);
+            }
+
+            holder.mStt.setText(current.getId() + "");
+           // Log.d(current.getId() + "show", current.getTitle());
             holder.mNameSong.setText(current.getTitle());
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
             holder.mHours.setText(formmatTime.format(current.getDuration()));
 
+            final Song finalCurrent = current;
             holder.mConstraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("position ", position+"//"+current.getTitle());
-                    mClickItemView.clickItem(current);
+                    Log.d(finalCurrent.getId() +"position ", position+"//"+ finalCurrent.getTitle());
+                    mClickItemView.clickItem(finalCurrent);
                 }
             });
+
             if (mMusicService != null) {
                 if (mMusicService.getNameSong().equals(mSong.get(position).getTitle())) {
                     holder.mStt.setText("");
@@ -102,6 +108,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
     public void setSong(List<Song> songs) {
         mSong = songs;
+        Log.d("size2", songs.size() + "//");
         notifyDataSetChanged();
     }
 
@@ -119,9 +126,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             ArrayList<Song> filterList = new ArrayList<>();
-            for (Song song:mListSong ) {
-                Log.d("log", song.getTitle());
-            }
             if (charSequence == null || charSequence.length() == 0) {
                 filterList.addAll(mListSong);
             } else {
@@ -133,10 +137,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                     }
                 }
             }
-
             FilterResults results = new FilterResults();
             results.values = filterList;
-
             return results;
         }
 

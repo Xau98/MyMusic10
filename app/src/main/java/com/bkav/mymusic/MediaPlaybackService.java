@@ -15,6 +15,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
@@ -44,13 +46,13 @@ public class MediaPlaybackService extends Service {
     private int mPositionCurrent = 0;
     private int loopSong = 0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
     private boolean shuffleSong = false;
-    private List<Song> mListAllSong= new ArrayList<>();
+    private List<Song> mListAllSong = new ArrayList<>();
     private SharedPreferences mSharedPreferences;
-    private  String SHARED_PREFERENCES_NAME="com.bkav.mymusic";
+    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
+
     @Override
     public void onCreate() {
         super.onCreate();
-
     }
 
 
@@ -74,7 +76,6 @@ public class MediaPlaybackService extends Service {
                     break;
             }
         }
-        // showNotification(nameSong, artist, link);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -153,13 +154,12 @@ public class MediaPlaybackService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
         builder.setSmallIcon(R.drawable.ic_music_note_black_24dp);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setStyle(new NotificationCompat.DecoratedCustomViewStyle());
         builder.setCustomContentView(mCustomContentView);
         builder.setCustomBigContentView(mCustomBigContentView);
         builder.setContentIntent(pendingIntent);
         mCustomBigContentView.setTextViewText(R.id.textSongName, nameSong);
         mCustomBigContentView.setTextViewText(R.id.textNameSonger, artist);
-        mCustomBigContentView.setImageViewResource(R.id.btnPlay, isMusicPlay() ? isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play_arrow_black_24dp : R.drawable.ic_play_arrow_black_24dp);
+        mCustomBigContentView.setImageViewResource(R.id.btnPlay, isMusicPlay() ? isPlaying() ? R.drawable.ic_pause_circle_filled_black_50dp : R.drawable.ic_play_circle_filled_black_50dp : R.drawable.ic_play_circle_filled_black_50dp);
         mCustomBigContentView.setOnClickPendingIntent(R.id.btnPrevious, previousPendingIntent);
         mCustomBigContentView.setOnClickPendingIntent(R.id.btnPlay, playPendingIntent);
         mCustomBigContentView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
@@ -168,7 +168,7 @@ public class MediaPlaybackService extends Service {
         } else
             mCustomBigContentView.setImageViewResource(R.id.img, R.drawable.default_cover_art);
 /////========
-        mCustomContentView.setImageViewResource(R.id.btnPlay, isMusicPlay() ? isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play_arrow_black_24dp : R.drawable.ic_play_arrow_black_24dp);
+        mCustomContentView.setImageViewResource(R.id.btnPlay, isMusicPlay() ? isPlaying() ? R.drawable.ic_pause_circle_filled_black_50dp : R.drawable.ic_play_circle_filled_black_50dp : R.drawable.ic_play_circle_filled_black_50dp);
         mCustomContentView.setOnClickPendingIntent(R.id.btnPrevious, previousPendingIntent);
         mCustomContentView.setOnClickPendingIntent(R.id.btnPlay, playPendingIntent);
         mCustomContentView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
@@ -220,36 +220,40 @@ public class MediaPlaybackService extends Service {
     }
 
     public void playSong(int mPositionCurrent) {
-     Log.d("play song", mPositionCurrent+"//");
-        Uri content_uri = Uri.parse(mListAllSong.get(mPositionCurrent).getFile());
         sMediaPlayer = new MediaPlayer();
         if (sMediaPlayer.isPlaying()) {
             sMediaPlayer.pause();
         }
         try {
-            sMediaPlayer.setDataSource(getApplicationContext(), content_uri);
-            sMediaPlayer.prepare();
-            sMediaPlayer.setWakeMode(getApplicationContext(),
-                    PowerManager.PARTIAL_WAKE_LOCK);
-            sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            listenner.onItemListenner();
+
+            Log.d("play song", mPositionCurrent + "//" + mListAllSong.get(mPositionCurrent).getFile());
+            for (int i = 0; i < mListAllSong.size() - 1; i++) {
+                if (mListAllSong.get(i).getId() == mPositionCurrent) {
+                    Log.d("link", mListAllSong.get(i).getFile());
+                    Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
+                    sMediaPlayer.setDataSource(getApplicationContext(), content_uri);
+                    sMediaPlayer.prepare();
+                    sMediaPlayer.setWakeMode(getApplicationContext(),
+                            PowerManager.PARTIAL_WAKE_LOCK);
+                    sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    listenner.onItemListenner();
+                    sMediaPlayer.start();
+                    link = mListAllSong.get(mPositionCurrent).getFile();
+                    nameSong = mListAllSong.get(mPositionCurrent).getTitle();
+                    artist = mListAllSong.get(mPositionCurrent).getArtist();
+                    showNotification(mListAllSong.get(mPositionCurrent).getTitle(), mListAllSong.get(mPositionCurrent).getArtist(), link);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        sMediaPlayer.start();
-        link = mListAllSong.get(mPositionCurrent).getFile();
-        nameSong = mListAllSong.get(mPositionCurrent).getTitle();
-        artist = mListAllSong.get(mPositionCurrent).getArtist();
-        showNotification(mListAllSong.get(mPositionCurrent).getTitle(), mListAllSong.get(mPositionCurrent).getArtist(), link);
-
         ///SharedPreferences
-        mSharedPreferences= getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=mSharedPreferences.edit();
+        mSharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt("position", getmPosition());
         editor.putString("nameSong", getNameSong());
-         editor.putString("nameArtist" , getArtist());
-         editor.putString("path", link);
+        editor.putString("nameArtist", getArtist());
+        editor.putString("path", link);
         editor.commit();
     }
 
@@ -271,6 +275,9 @@ public class MediaPlaybackService extends Service {
             listenner.onItemListenner();
         }
         showNotification(nameSong, artist, link);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_DETACH);
+        }
     }
 
     public void previousSong() {
@@ -286,8 +293,7 @@ public class MediaPlaybackService extends Service {
             }
             playSong(mPositionCurrent);
             listenner.actionNotification();
-        }
-        else {
+        } else {
             playSong(mPositionCurrent);
         }
     }

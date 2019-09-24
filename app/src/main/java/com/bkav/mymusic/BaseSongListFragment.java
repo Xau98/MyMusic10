@@ -1,13 +1,13 @@
 package com.bkav.mymusic;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -17,27 +17,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -54,14 +48,15 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private SharedPreferences mSharePreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private boolean mExitService = false;
-    private List<Song> songs;
+    private List<Song> mListSongs;
+    private int position = 0;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
             mAdapter.setmMusicService(mMusicService);
-            mMusicService.setmListAllSong(songs);
+            mMusicService.setmListAllSong(mListSongs);
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
                 @Override
                 public void onItemListenner() {
@@ -80,7 +75,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mExitService = false;
-         //   Toast.makeText(mMusicService, "dis", Toast.LENGTH_SHORT).show();
+            //   Toast.makeText(mMusicService, "dis", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -90,14 +85,14 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         if (mExitService == true) {
             updateUI();
             mAdapter.setmMusicService(mMusicService);
-            Log.d("size", songs.size() + "//");
-            mMusicService.setmListAllSong(songs);
+            Log.d("size", mListSongs.size() + "//");
+            mMusicService.setmListAllSong(mListSongs);
         }
 
     }
 
     public void setSong(List<Song> songs) {
-        this.songs = songs;
+        this.mListSongs = songs;
         Log.d("size", songs.size() + "//");
         mAdapter.setSong(songs);
     }
@@ -108,6 +103,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mArtist = view.findViewById(R.id.Artist);
         mdisk = view.findViewById(R.id.disk);
         mNameSong = view.findViewById(R.id.namePlaySong);
+        mNameSong.setSelected(true);
         constraintLayout = view.findViewById(R.id.constraintLayout);
     }
 
@@ -140,8 +136,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         setHasOptionsMenu(true);
         mSharePreferences = this.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
-        int position = mSharePreferences.getInt("position", 3);
-        mNameSong.setText(mSharePreferences.getString("nameSong","Name Song")  );
+        position = mSharePreferences.getInt("position", 3);
+        mNameSong.setText(mSharePreferences.getString("nameSong", "Name Song"));
         mArtist.setText(mSharePreferences.getString("nameArtist", "Name Artist"));
 
         if (!mSharePreferences.getString("path", "").equals(""))
@@ -151,21 +147,22 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                 mdisk.setImageResource(R.drawable.default_cover_art);
 
         mClickPlay.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
                 if (mMusicService != null) {
-                   if(mMusicService.isMusicPlay()) {
-                       if (mMusicService.isPlaying()) {
-                           mMusicService.pauseSong();
-                       } else {
-                           mMusicService.playingSong();
-                       }
-                       updateUI();
-                   }else {
-                       mMusicService.setmPosition(mSharePreferences.getInt("position", 0));
-                       mMusicService.playSong(mSharePreferences.getInt("position", 0));
-                       updateUI();
-                   }
+                    if (mMusicService.isMusicPlay()) {
+                        if (mMusicService.isPlaying()) {
+                            mMusicService.pauseSong();
+                        } else {
+                            mMusicService.playingSong();
+                        }
+                        updateUI();
+                    } else {
+                        mMusicService.setmPosition(mSharePreferences.getInt("position", 0));
+                        mMusicService.playSong(mSharePreferences.getInt("position", 0));
+                        updateUI();
+                    }
                 }
             }
         });
@@ -173,6 +170,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!mMusicService.isMusicPlay()) {
+                    mMusicService.playSong(position);
+                }
                 MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
                 mMediaPlaybackFragment.setmMusicService(mMusicService);
                 getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.framentContent, mMediaPlaybackFragment).commit();
@@ -205,11 +205,11 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater =getActivity().getMenuInflater();
+        inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
-        MenuItem menuItem=menu.findItem(R.id.app_bar_search);
-        SearchView searchView= (SearchView) menuItem.getActionView();
+        MenuItem menuItem = menu.findItem(R.id.app_bar_search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -223,22 +223,19 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                 return false;
             }
         });
-
-
     }
 
 
     @Override
     public void clickItem(Song songs) {
         mMusicService.setmPosition(songs.getId());
-        //mPosition = songs.getId();
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
         mMusicService.playSong(songs.getId());
+        updateUI();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
-        updateUI();
         Log.d("click :", songs.getTitle());
     }
 }
