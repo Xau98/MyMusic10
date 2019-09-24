@@ -44,24 +44,15 @@ public class MediaPlaybackService extends Service {
     private int mPositionCurrent = 0;
     private int loopSong = 0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
     private boolean shuffleSong = false;
-    private List<Song> mListAllSong;
+    private List<Song> mListAllSong= new ArrayList<>();
     private SharedPreferences mSharedPreferences;
-    private String mNameSharepre = "com.example.music";
+    private  String SHARED_PREFERENCES_NAME="com.bkav.mymusic";
     @Override
     public void onCreate() {
         super.onCreate();
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt("position", getmPosition());
-        editor.putString("nameSong", getNameSong()+"");
-        editor.apply();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -229,7 +220,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void playSong(int mPositionCurrent) {
-        Log.d("play song", mListAllSong.get(mPositionCurrent).getFile());
+     Log.d("play song", mPositionCurrent+"//");
         Uri content_uri = Uri.parse(mListAllSong.get(mPositionCurrent).getFile());
         sMediaPlayer = new MediaPlayer();
         if (sMediaPlayer.isPlaying()) {
@@ -251,6 +242,15 @@ public class MediaPlaybackService extends Service {
         nameSong = mListAllSong.get(mPositionCurrent).getTitle();
         artist = mListAllSong.get(mPositionCurrent).getArtist();
         showNotification(mListAllSong.get(mPositionCurrent).getTitle(), mListAllSong.get(mPositionCurrent).getArtist(), link);
+
+        ///SharedPreferences
+        mSharedPreferences= getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=mSharedPreferences.edit();
+        editor.putInt("position", getmPosition());
+        editor.putString("nameSong", getNameSong());
+         editor.putString("nameArtist" , getArtist());
+         editor.putString("path", link);
+        editor.commit();
     }
 
     public void playingSong() {

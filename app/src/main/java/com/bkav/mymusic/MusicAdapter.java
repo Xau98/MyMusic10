@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,11 +24,15 @@ import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
-public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> {
-
+public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> implements Filterable {
+    private List<Song> mListSong = new ArrayList<>();
     private List<Song> mSong;
     private LayoutInflater mInflater;
     private Context mContext;
@@ -56,7 +62,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
         if (mSong != null) {
             final Song current = mSong.get(position);
-            holder.mStt.setText(current.getId() + "");
+
+            holder.mStt.setText(position + "");
             Log.d(current.getId() + "show", current.getTitle());
             holder.mNameSong.setText(current.getTitle());
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
@@ -65,6 +72,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             holder.mConstraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.d("position ", position+"//"+current.getTitle());
                     mClickItemView.clickItem(current);
                 }
             });
@@ -95,6 +103,55 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     public void setSong(List<Song> songs) {
         mSong = songs;
         notifyDataSetChanged();
+    }
+
+    public void updateList(List<Song> songs) {
+        mSong = songs;
+        mListSong = new ArrayList<>(mSong);
+        notifyDataSetChanged();
+
+    }
+    public Filter getFilter() {
+        return filter;
+    }
+
+    private Filter filter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            ArrayList<Song> filterList = new ArrayList<>();
+            for (Song song:mListSong ) {
+                Log.d("log", song.getTitle());
+            }
+            if (charSequence == null || charSequence.length() == 0) {
+                filterList.addAll(mListSong);
+            } else {
+                String filterPattern = unAccent(charSequence.toString().toLowerCase().trim());
+
+                for (Song song : mListSong) {
+                    if (unAccent(song.getTitle().toLowerCase()).contains(filterPattern)) {
+                        filterList.add(song);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filterList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            mSong.clear();
+            mSong.addAll((Collection<? extends Song>) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
+
+    public static String unAccent(String s) {
+        String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(temp).replaceAll("").replaceAll("Đ", "D").replace("đ", "d");
     }
 
 

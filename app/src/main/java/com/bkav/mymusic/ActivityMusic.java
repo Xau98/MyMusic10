@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
@@ -45,28 +46,33 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 public class ActivityMusic extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
     private MediaPlaybackFragment mMediaPlaybackFragment;
     private AllSongsFragment mAllSongsFragment;
     private SharedPreferences mSharedPreferences;
-    private String mNameSharepre = "com.example.music";
-
+    private  String SHARED_PREFERENCES_NAME="com.bkav.mymusic";
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
-            mAllSongsFragment.setmService(mMusicService);
+
             mExitService = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-
+            Toast.makeText(mMusicService, "dis", Toast.LENGTH_SHORT).show();
         }
     };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +91,7 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-//        mSharedPreferences = getSharedPreferences(mNameSharepre, MODE_PRIVATE);
-//        int index = mSharedPreferences.getInt("position", 1);
-//        String mNameSongRecently = mSharedPreferences.getString("nameSong","Name Song");
-//        Log.d("share1", index+"//"+mNameSongRecently);
+
         mMediaPlaybackFragment = new MediaPlaybackFragment();
         mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
@@ -101,20 +104,17 @@ public class ActivityMusic extends AppCompatActivity
         if (isMyServiceRunning(MediaPlaybackService.class)) {
             connectService();
         } else {
-            Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startService(it);
-            }
+            startService();
             connectService();
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
+    public void startService() {
+        Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startService(it);
+        }
     }
-
     public void connectService() {
         Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
         bindService(it, mServiceConnection, 0);
@@ -133,7 +133,7 @@ public class ActivityMusic extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        getParent().unbindService(mServiceConnection);
+        unbindService(mServiceConnection);
     }
 
     @Override
@@ -179,12 +179,7 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -210,16 +205,13 @@ public class ActivityMusic extends AppCompatActivity
         } else if (id == R.id.nav_playlist) {
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 
 }

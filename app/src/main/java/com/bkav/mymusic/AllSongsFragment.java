@@ -42,7 +42,6 @@ import java.util.List;
 
 public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
-    private MusicAdapter mAdapter;
     public void setmService(MediaPlaybackService mService) {
         this.mMusicService = mService;
     }
@@ -81,6 +80,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 Log.d("Path :" + path, " Artist :" + artist + " Duration " + duration);
             }while (c.moveToNext());
         }
+        mAdapter.updateList(listMusic);
         setSong(listMusic);
     }
 
