@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -57,7 +58,6 @@ public class ActivityMusic extends AppCompatActivity
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
-
             mExitService = true;
         }
 
@@ -88,16 +88,32 @@ public class ActivityMusic extends AppCompatActivity
         mMediaPlaybackFragment = new MediaPlaybackFragment();
         mAllSongsFragment = new AllSongsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        if(findViewById(R.id.detailFragment)!=null){
+            Toast.makeText(this, "start", Toast.LENGTH_SHORT).show();
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.framentContent2, mAllSongsFragment).replace(R.id.detailFragment,mMediaPlaybackFragment).commit();
+        }
         if (isMyServiceRunning(MediaPlaybackService.class)) {
             connectService();
         } else {
             startService();
             connectService();
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+            Toast.makeText(this, "xoay", Toast.LENGTH_SHORT).show();
+
         }
     }
 
