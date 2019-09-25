@@ -62,11 +62,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
         if (mSong != null) {
             Song current = mSong.get(position);
-
-            if(mListSong !=null){
-                 current = mListSong.get(position);
-            }
-
             holder.mStt.setText(current.getId() + "");
            // Log.d(current.getId() + "show", current.getTitle());
             holder.mNameSong.setText(current.getTitle());
@@ -114,7 +109,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
     public void updateList(List<Song> songs) {
         mSong = songs;
-        mListSong = new ArrayList<>(mSong);
+       mListSong = new ArrayList<>(mSong);
         notifyDataSetChanged();
 
     }
@@ -126,16 +121,23 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             ArrayList<Song> filterList = new ArrayList<>();
+            Log.d("ok ", charSequence+"//");
             if (charSequence == null || charSequence.length() == 0) {
                 filterList.addAll(mListSong);
             } else {
                 String filterPattern = unAccent(charSequence.toString().toLowerCase().trim());
 
                 for (Song song : mListSong) {
+
                     if (unAccent(song.getTitle().toLowerCase()).contains(filterPattern)) {
+                        Log.d("kq",unAccent(song.getTitle().toLowerCase())+"//"+filterPattern);
                         filterList.add(song);
                     }
                 }
+            }
+
+            for(int i=0;i<mListSong.size()-1;i++){
+                Log.d("ketqua", mListSong.get(i).getTitle());
             }
             FilterResults results = new FilterResults();
             results.values = filterList;

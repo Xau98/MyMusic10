@@ -225,9 +225,8 @@ public class MediaPlaybackService extends Service {
             sMediaPlayer.pause();
         }
         try {
-
-            Log.d("play song", mPositionCurrent + "//" + mListAllSong.get(mPositionCurrent).getFile());
-            for (int i = 0; i < mListAllSong.size() - 1; i++) {
+            Log.d("play song", mPositionCurrent + "//"+mListAllSong.size() );
+            for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPositionCurrent) {
                     Log.d("link", mListAllSong.get(i).getFile());
                     Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
@@ -238,10 +237,10 @@ public class MediaPlaybackService extends Service {
                     sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     listenner.onItemListenner();
                     sMediaPlayer.start();
-                    link = mListAllSong.get(mPositionCurrent).getFile();
-                    nameSong = mListAllSong.get(mPositionCurrent).getTitle();
-                    artist = mListAllSong.get(mPositionCurrent).getArtist();
-                    showNotification(mListAllSong.get(mPositionCurrent).getTitle(), mListAllSong.get(mPositionCurrent).getArtist(), link);
+                    link = mListAllSong.get(i).getFile();
+                    nameSong = mListAllSong.get(i).getTitle();
+                    artist = mListAllSong.get(i).getArtist();
+                    showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), link);
                 }
             }
         } catch (IOException e) {

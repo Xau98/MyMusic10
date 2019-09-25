@@ -86,9 +86,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             updateUI();
             mAdapter.setmMusicService(mMusicService);
             Log.d("size", mListSongs.size() + "//");
-            mMusicService.setmListAllSong(mListSongs);
+          //  mMusicService.setmListAllSong(mListSongs);
         }
-
     }
 
     public void setSong(List<Song> songs) {
@@ -236,6 +235,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         updateUI();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
-        Log.d("click :", songs.getTitle());
+        Log.d("click :", songs.getTitle()+"//"+songs.getId());
     }
 }
