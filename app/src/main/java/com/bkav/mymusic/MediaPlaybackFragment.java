@@ -3,24 +3,19 @@ package com.bkav.mymusic;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import java.text.SimpleDateFormat;
 
@@ -36,13 +31,13 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void updateUI() {
         updateTime();
-        mNameSong.setText(mMusicService.getNameSong() + "");
-        mArtist.setText(mMusicService.getArtist());
+        mNameSong.setText(mMusicService.getmNameSong() + "");
+        mArtist.setText(mMusicService.getmArtist());
         mTimeFinish.setText(mMusicService.getDuration());
-        if (!mMusicService.getLink().equals(""))
-            if (mMusicService.imageArtist(mMusicService.getLink()) != null) {
-                imgBackGround.setImageBitmap(mMusicService.imageArtist(mMusicService.getLink()));
-                mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getLink()));
+        if (!mMusicService.getmPath().equals(""))
+            if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
+                imgBackGround.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
+                mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
             } else{
                 imgBackGround.setImageResource(R.drawable.default_cover_art);
                 mdisk.setImageResource(R.drawable.default_cover_art);
@@ -56,15 +51,15 @@ public class MediaPlaybackFragment extends Fragment {
             btPlay.setBackgroundResource(R.drawable.ic_play_circle_filled_black_50dp);
         }
 
-        if (mMusicService.isShuffleSong()) {
+        if (mMusicService.ismShuffleSong()) {
             btShuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow_24dp);
         } else
             btShuffle.setBackgroundResource(R.drawable.ic_shuffle_black_50dp);
 
-        if (mMusicService.getLoopSong() == 0) {
+        if (mMusicService.getmLoopSong() == 0) {
             btRepeat.setBackgroundResource(R.drawable.ic_repeat_white_24dp);
         } else {
-            if (mMusicService.getLoopSong() == -1) {
+            if (mMusicService.getmLoopSong() == -1) {
                 btRepeat.setBackgroundResource(R.drawable.ic_repeat_yellow_24dp);
             } else
                 btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
@@ -129,16 +124,16 @@ public class MediaPlaybackFragment extends Fragment {
         btRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("loop", mMusicService.getLoopSong() + "");
-                if (mMusicService.getLoopSong() == 0) {
-                    mMusicService.setLoopSong(-1);
+                Log.d("loop", mMusicService.getmLoopSong() + "");
+                if (mMusicService.getmLoopSong() == 0) {
+                    mMusicService.setmLoopSong(-1);
                     btRepeat.setBackgroundResource(R.drawable.ic_repeat_yellow_24dp);
                 } else {
-                    if (mMusicService.getLoopSong() == 1) {
-                        mMusicService.setLoopSong(0);
+                    if (mMusicService.getmLoopSong() == 1) {
+                        mMusicService.setmLoopSong(0);
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_white_24dp);
                     } else {
-                        mMusicService.setLoopSong(1);
+                        mMusicService.setmLoopSong(1);
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
                     }
                 }
@@ -148,11 +143,11 @@ public class MediaPlaybackFragment extends Fragment {
         btShuffle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mMusicService.isShuffleSong()) {
-                    mMusicService.setShuffleSong(false);
+                if (mMusicService.ismShuffleSong()) {
+                    mMusicService.setmShuffleSong(false);
                     btShuffle.setBackgroundResource(R.drawable.ic_shuffle_black_50dp);
                 } else {
-                    mMusicService.setShuffleSong(true);
+                    mMusicService.setmShuffleSong(true);
                     btShuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow_24dp);
                 }
             }

@@ -42,9 +42,6 @@ import java.util.List;
 
 public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
-    public void setmService(MediaPlaybackService mService) {
-        this.mMusicService = mService;
-    }
 
     @Nullable
     @Override

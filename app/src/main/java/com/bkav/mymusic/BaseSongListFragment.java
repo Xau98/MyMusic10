@@ -1,6 +1,8 @@
 package com.bkav.mymusic;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -21,6 +23,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -48,7 +52,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private SharedPreferences mSharePreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private boolean mExitService = false;
-    private List<Song> mListSongs;
+    private List<Song> mListSongs=new ArrayList<>();
     private int position = 0;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -57,6 +61,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mMusicService = binder.getMusicBinder();
             mAdapter.setmMusicService(mMusicService);
             mMusicService.setmListAllSong(mListSongs);
+            updateUI();
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
                 @Override
                 public void onItemListenner() {
@@ -71,29 +76,35 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             });
             mExitService = true;
         }
-
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mExitService = false;
-            //   Toast.makeText(mMusicService, "dis", Toast.LENGTH_SHORT).show();
         }
     };
+
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (mExitService == true) {
+//
+//            updateUI();
+//            mAdapter.setmMusicService(mMusicService);
+//            Log.d("size", mListSongs.size() + "//");
+//        }
+//    }
+    public void setSong(List<Song> songs) {
+        this.mListSongs = songs;
+        mAdapter.setSong(songs);
+        if (mExitService == true) {
+            updateUI();
+        }
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mExitService == true) {
-            updateUI();
-            mAdapter.setmMusicService(mMusicService);
-            Log.d("size", mListSongs.size() + "//");
-          //  mMusicService.setmListAllSong(mListSongs);
-        }
-    }
-
-    public void setSong(List<Song> songs) {
-        this.mListSongs = songs;
-        Log.d("size", songs.size() + "//");
-        mAdapter.setSong(songs);
+        mAdapter.setmMusicService(mMusicService);
     }
 
     void initView(View view) {
@@ -134,7 +145,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         initView(view);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         setHasOptionsMenu(true);
-        mSharePreferences = this.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+        mSharePreferences = this.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
         position = mSharePreferences.getInt("position", 3);
         mNameSong.setText(mSharePreferences.getString("nameSong", "Name Song"));
         mArtist.setText(mSharePreferences.getString("nameArtist", "Name Artist"));
@@ -189,14 +200,14 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                 mClickPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
             }
 
-            if (!mMusicService.getLink().equals(""))
-                if (mMusicService.imageArtist(mMusicService.getLink()) != null) {
-                    mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getLink()));
+            if (!mMusicService.getmPath().equals(""))
+                if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
+                    mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
                 } else
                     mdisk.setImageResource(R.drawable.default_cover_art);
 
-            mNameSong.setText(mMusicService.getNameSong());
-            mArtist.setText(mMusicService.getArtist());
+            mNameSong.setText(mMusicService.getmNameSong());
+            mArtist.setText(mMusicService.getmArtist());
         }
         mAdapter.notifyDataSetChanged();
     }
@@ -206,7 +217,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         super.onCreateOptionsMenu(menu, inflater);
         inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-
         MenuItem menuItem = menu.findItem(R.id.app_bar_search);
         SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -224,7 +234,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         });
     }
 
-
     @Override
     public void clickItem(Song songs) {
         mMusicService.setmPosition(songs.getId());
@@ -237,4 +246,5 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mArtist.setText(songs.getArtist());
         Log.d("click :", songs.getTitle()+"//"+songs.getId());
     }
+
 }

@@ -1,14 +1,8 @@
 package com.bkav.mymusic;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +11,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -78,7 +71,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             });
 
             if (mMusicService != null) {
-                if (mMusicService.getNameSong().equals(mSong.get(position).getTitle())) {
+                mMusicService.setmListAllSong(mSong);
+                if (mMusicService.getmNameSong().equals(mSong.get(position).getTitle())) {
                     holder.mStt.setText("");
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                     holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
@@ -112,6 +106,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
        mListSong = new ArrayList<>(mSong);
         notifyDataSetChanged();
 
+
     }
     public Filter getFilter() {
         return filter;
@@ -121,24 +116,18 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             ArrayList<Song> filterList = new ArrayList<>();
-            Log.d("ok ", charSequence+"//");
             if (charSequence == null || charSequence.length() == 0) {
                 filterList.addAll(mListSong);
             } else {
                 String filterPattern = unAccent(charSequence.toString().toLowerCase().trim());
 
                 for (Song song : mListSong) {
-
                     if (unAccent(song.getTitle().toLowerCase()).contains(filterPattern)) {
-                        Log.d("kq",unAccent(song.getTitle().toLowerCase())+"//"+filterPattern);
                         filterList.add(song);
                     }
                 }
             }
 
-            for(int i=0;i<mListSong.size()-1;i++){
-                Log.d("ketqua", mListSong.get(i).getTitle());
-            }
             FilterResults results = new FilterResults();
             results.values = filterList;
             return results;
@@ -167,7 +156,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mConstraintLayout= itemView.findViewById(R.id.constraintLayoutItem);
-            mNameSong = itemView.findViewById(R.id.nameSong);
+            mNameSong = itemView.findViewById(R.id.mNameSong);
             mHours = itemView.findViewById(R.id.hours);
             mStt = itemView.findViewById(R.id.stt);
             mMore = itemView.findViewById(R.id.more);
@@ -175,7 +164,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     }
 
     interface OnClickItemView {
-       // void clickItem( int position , String title,String path ,String artist,int duration);
      void clickItem( Song song);
     }
 }

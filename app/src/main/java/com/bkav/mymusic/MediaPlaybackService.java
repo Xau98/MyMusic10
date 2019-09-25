@@ -21,9 +21,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
@@ -38,14 +36,14 @@ public class MediaPlaybackService extends Service {
     public static final String ACTION_PLAY = "xxx.yyy.zzz.ACTION_PLAY";
     public static final String ACTION_NEXT = "xxx.yyy.zzz.ACTION_NEXT";
     private Binder binder = new MusicBinder();
-    private MediaPlayer sMediaPlayer = null;// sua static
-    private Listenner listenner;
-    private String link = "";
-    private String artist = "";
-    private String nameSong = "";
+    private MediaPlayer mMediaPlayer = null;
+    private Listenner mListenner;
+    private String mPath = "";
+    private String mArtist = "";
+    private String mNameSong = "";
     private int mPositionCurrent = 0;
-    private int loopSong = 0;// loopSong =0 (ko lap)// loopSong=-1 (lap ds) //loopSong =1 (lap 1)
-    private boolean shuffleSong = false;
+    private int mLoopSong = 0;// mLoopSong =0 (ko lap)// mLoopSong=-1 (lap ds) //mLoopSong =1 (lap 1)
+    private boolean mShuffleSong = false;
     private List<Song> mListAllSong = new ArrayList<>();
     private SharedPreferences mSharedPreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
@@ -68,7 +66,7 @@ public class MediaPlaybackService extends Service {
                     nextSong();
                     break;
                 case ACTION_PLAY:
-                    if (sMediaPlayer.isPlaying()) {
+                    if (mMediaPlayer.isPlaying()) {
                         pauseSong();
                     } else {
                         playingSong();
@@ -80,47 +78,35 @@ public class MediaPlaybackService extends Service {
     }
 
     public void getListenner(Listenner listenner) {
-        this.listenner = listenner;
+        this.mListenner = listenner;
     }
 
-    public String getNameSong() {
-        return nameSong;
+    public String getmNameSong() {
+        return mNameSong;
     }
 
-    public String getLink() {
-        return link;
+    public String getmPath() {
+        return mPath;
     }
 
-    public String getArtist() {
-        return artist;
+    public String getmArtist() {
+        return mArtist;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public int getmLoopSong() {
+        return mLoopSong;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
+    public void setmLoopSong(int mLoopSong) {
+        this.mLoopSong = mLoopSong;
     }
 
-    public void setNameSong(String nameSong) {
-        this.nameSong = nameSong;
+    public boolean ismShuffleSong() {
+        return mShuffleSong;
     }
 
-    public int getLoopSong() {
-        return loopSong;
-    }
-
-    public void setLoopSong(int loopSong) {
-        this.loopSong = loopSong;
-    }
-
-    public boolean isShuffleSong() {
-        return shuffleSong;
-    }
-
-    public void setShuffleSong(boolean shuffleSong) {
-        this.shuffleSong = shuffleSong;
+    public void setmShuffleSong(boolean mShuffleSong) {
+        this.mShuffleSong = mShuffleSong;
     }
 
     public void setmListAllSong(List<Song> mListAllSong) {
@@ -193,14 +179,14 @@ public class MediaPlaybackService extends Service {
     }
 
     public boolean isPlaying() {
-        if (sMediaPlayer.isPlaying())
+        if (mMediaPlayer.isPlaying())
             return true;
         else
             return false;
     }
 
     public void seekToSong(int getProgress) {
-        sMediaPlayer.seekTo(getProgress);
+        mMediaPlayer.seekTo(getProgress);
     }
 
     public int getmPosition() {
@@ -212,35 +198,35 @@ public class MediaPlaybackService extends Service {
     }
 
     public int getCurrentPositionSong() {
-        return sMediaPlayer.getCurrentPosition();
+        return mMediaPlayer.getCurrentPosition();
     }
 
     public int getDurationSong() {
-        return sMediaPlayer.getDuration();
+        return mMediaPlayer.getDuration();
     }
 
     public void playSong(int mPositionCurrent) {
-        sMediaPlayer = new MediaPlayer();
-        if (sMediaPlayer.isPlaying()) {
-            sMediaPlayer.pause();
+        mMediaPlayer = new MediaPlayer();
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.pause();
         }
         try {
             Log.d("play song", mPositionCurrent + "//"+mListAllSong.size() );
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPositionCurrent) {
-                    Log.d("link", mListAllSong.get(i).getFile());
+                    Log.d("mPath", mListAllSong.get(i).getFile());
                     Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
-                    sMediaPlayer.setDataSource(getApplicationContext(), content_uri);
-                    sMediaPlayer.prepare();
-                    sMediaPlayer.setWakeMode(getApplicationContext(),
+                    mMediaPlayer.setDataSource(getApplicationContext(), content_uri);
+                    mMediaPlayer.prepare();
+                    mMediaPlayer.setWakeMode(getApplicationContext(),
                             PowerManager.PARTIAL_WAKE_LOCK);
-                    sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    listenner.onItemListenner();
-                    sMediaPlayer.start();
-                    link = mListAllSong.get(i).getFile();
-                    nameSong = mListAllSong.get(i).getTitle();
-                    artist = mListAllSong.get(i).getArtist();
-                    showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), link);
+                    mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    mListenner.onItemListenner();
+                    mMediaPlayer.start();
+                    mPath = mListAllSong.get(i).getFile();
+                    mNameSong = mListAllSong.get(i).getTitle();
+                    mArtist = mListAllSong.get(i).getArtist();
+                    showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
                 }
             }
         } catch (IOException e) {
@@ -250,39 +236,39 @@ public class MediaPlaybackService extends Service {
         mSharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt("position", getmPosition());
-        editor.putString("nameSong", getNameSong());
-        editor.putString("nameArtist", getArtist());
-        editor.putString("path", link);
+        editor.putString("nameSong", getmNameSong());
+        editor.putString("nameArtist", getmArtist());
+        editor.putString("path", mPath);
         editor.commit();
     }
 
     public void playingSong() {
-        if (sMediaPlayer.isPlaying()) {
-            sMediaPlayer.pause();
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.pause();
         } else {
-            sMediaPlayer.start();
+            mMediaPlayer.start();
         }
-        if (listenner != null) {
-            listenner.onItemListenner();
+        if (mListenner != null) {
+            mListenner.onItemListenner();
         }
-        showNotification(nameSong, artist, link);
+        showNotification(mNameSong, mArtist, mPath);
     }
 
     public void pauseSong() {
-        sMediaPlayer.pause();
-        if (listenner != null) {
-            listenner.onItemListenner();
+        mMediaPlayer.pause();
+        if (mListenner != null) {
+            mListenner.onItemListenner();
         }
-        showNotification(nameSong, artist, link);
+        showNotification(mNameSong, mArtist, mPath);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             stopForeground(STOP_FOREGROUND_DETACH);
         }
     }
 
     public void previousSong() {
-        sMediaPlayer.pause();
+        mMediaPlayer.pause();
         if (getCurrentPositionSong() <= 3000) {
-            if (shuffleSong == true) {
+            if (mShuffleSong == true) {
                 mPositionCurrent = actionShuffleSong();
             } else {
                 if (mPositionCurrent == 0) {
@@ -291,16 +277,15 @@ public class MediaPlaybackService extends Service {
                     mPositionCurrent--;
             }
             playSong(mPositionCurrent);
-            listenner.actionNotification();
+            mListenner.actionNotification();
         } else {
             playSong(mPositionCurrent);
         }
     }
 
     public void nextSong() {
-        sMediaPlayer.pause();
-
-        if (shuffleSong == true) {
+        mMediaPlayer.pause();
+        if (mShuffleSong == true) {
             mPositionCurrent = actionShuffleSong();
         } else {
             if (mPositionCurrent == mListAllSong.size() - 1)
@@ -309,7 +294,7 @@ public class MediaPlaybackService extends Service {
                 mPositionCurrent++;
         }
         playSong(mPositionCurrent);
-        listenner.actionNotification();
+        mListenner.actionNotification();
     }
 
     public int actionShuffleSong() {
@@ -320,11 +305,11 @@ public class MediaPlaybackService extends Service {
 
     public String getDuration() {
         SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
-        return formmatTime.format(sMediaPlayer.getDuration());
+        return formmatTime.format(mMediaPlayer.getDuration());
     }
 
     public boolean isMusicPlay() {
-        if (sMediaPlayer != null)
+        if (mMediaPlayer != null)
             return true;
         return false;
     }
@@ -341,15 +326,15 @@ public class MediaPlaybackService extends Service {
     }
 
     public void onCompletionSong() {
-        sMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer media) {
-                sMediaPlayer.pause();
-                if (loopSong == 0) {
+                mMediaPlayer.pause();
+                if (mLoopSong == 0) {
                     if (mPositionCurrent < mListAllSong.size() - 1)
                         mPositionCurrent++;
                 } else {
-                    if (loopSong == -1) {
+                    if (mLoopSong == -1) {
                         if (mPositionCurrent == mListAllSong.size() - 1) {
                             mPositionCurrent = 0;
                         } else {
@@ -358,7 +343,7 @@ public class MediaPlaybackService extends Service {
                     }
                 }
                 playSong(mPositionCurrent);
-                listenner.actionNotification();
+                mListenner.actionNotification();
             }
         });
     }
@@ -381,7 +366,6 @@ public class MediaPlaybackService extends Service {
 
     public interface Listenner {
         void onItemListenner();
-
         void actionNotification();
 
     }

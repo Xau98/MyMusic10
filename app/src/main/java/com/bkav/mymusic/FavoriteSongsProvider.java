@@ -9,6 +9,8 @@ public class FavoriteSongsProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+
+
         return false;
     }
 

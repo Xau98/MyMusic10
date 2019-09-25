@@ -20,7 +20,7 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/nameSong"
+        android:id="@+id/mNameSong"
         android:layout_width="281dp"
         android:layout_height="28dp"
         android:layout_marginStart="8dp"
@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toStartOf="@+id/more"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/stt"
-        app:layout_constraintTop_toBottomOf="@+id/nameSong"
+        app:layout_constraintTop_toBottomOf="@+id/mNameSong"
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
@@ -73,6 +73,6 @@
         android:src="@drawable/ic_more_vert_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/nameSong"
+        app:layout_constraintStart_toEndOf="@+id/mNameSong"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
