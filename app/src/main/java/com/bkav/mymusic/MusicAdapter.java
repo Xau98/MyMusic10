@@ -75,10 +75,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                 if (mMusicService.getmNameSong().equals(mSong.get(position).getTitle())) {
                     holder.mStt.setText("");
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-                    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
+                    //holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
+                    holder.mStt.setBackgroundResource(R.drawable.ic_equalizer_black_24dp);
                 }else {
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
-                    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+                    holder.mStt.setBackgroundResource(R.drawable.ic_equalizer_while_24dp);
+                //    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_while_24dp, 0, 0, 0);
                 }
             }
         } else {
@@ -156,7 +158,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mConstraintLayout= itemView.findViewById(R.id.constraintLayoutItem);
-            mNameSong = itemView.findViewById(R.id.nameSong);
+            mNameSong = itemView.findViewById(R.id.namesong);
             mHours = itemView.findViewById(R.id.hours);
             mStt = itemView.findViewById(R.id.stt);
             mMore = itemView.findViewById(R.id.more);

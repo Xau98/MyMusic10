@@ -50,15 +50,14 @@ public class ActivityMusic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener ,UpdateFragment{
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
-    private MediaPlaybackFragment mMediaPlaybackFragment;
-    private AllSongsFragment mAllSongsFragment;
+    private  MediaPlaybackFragment  mMediaPlaybackFragment= new MediaPlaybackFragment();;
+    private AllSongsFragment mAllSongsFragment= new AllSongsFragment();
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
-            mMediaPlaybackFragment = new MediaPlaybackFragment();
             mMediaPlaybackFragment.setmMusicService(mMusicService);
             mExitService = true;
         }
@@ -88,14 +87,12 @@ public class ActivityMusic extends AppCompatActivity
         //============================================
 
      if(findViewById(R.id.frament1)!=null&& findViewById(R.id.frament2)!=null){
-         mMediaPlaybackFragment = new MediaPlaybackFragment();
-         mAllSongsFragment = new AllSongsFragment();
          Toast.makeText(this, "fragment 1,2", Toast.LENGTH_SHORT).show();
          getSupportFragmentManager().beginTransaction().replace(R.id.frament1, mAllSongsFragment).commit();
          getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
      }
+
      if(findViewById(R.id.framentContent)!=null) {
-         mAllSongsFragment = new AllSongsFragment();
          Toast.makeText(this, "fragment content", Toast.LENGTH_SHORT).show();
          getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
      }
@@ -113,19 +110,19 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
-            setContentView(R.layout.activity_main);
-            Log.d("xoay", "xoay");
-            Toast.makeText(this, "xoay", Toast.LENGTH_SHORT).show();
-
-        }else {
-            Toast.makeText(this, "xoay1", Toast.LENGTH_SHORT).show();
-
-        }
-    }
+//    @Override
+//    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+//            setContentView(R.layout.activity_main);
+//            Log.d("xoay", "xoay");
+//            Toast.makeText(this, "xoay", Toast.LENGTH_SHORT).show();
+//
+//        }else {
+//            Toast.makeText(this, "xoay1", Toast.LENGTH_SHORT).show();
+//
+//        }
+//    }
 
     public void startService() {
         Intent it = new Intent(ActivityMusic.this, MediaPlaybackService.class);
@@ -210,7 +207,6 @@ public class ActivityMusic extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
 
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -218,7 +214,10 @@ public class ActivityMusic extends AppCompatActivity
 
     @Override
     public void updateFragment() {
-        mAllSongsFragment.updateUI();
-        mMediaPlaybackFragment.updateUI();
+        if(findViewById(R.id.frament1)!=null&& findViewById(R.id.frament2)!=null) {
+        //    mAllSongsFragment.updateUI();
+            //  if(findViewById(R.id.framentContent)!=null)
+           // mMediaPlaybackFragment.updateUI();
+        }
     }
 }

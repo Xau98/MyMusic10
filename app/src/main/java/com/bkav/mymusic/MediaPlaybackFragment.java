@@ -1,9 +1,14 @@
 package com.bkav.mymusic;
 
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,40 +35,86 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
     private SeekBar mSeekBar;
     private TextView mTimeStart, mTimeFinish, mArtist, mNameSong;
     private ImageView mdisk;
+    UpdateFragment updateFragment;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        updateFragment =(UpdateFragment) getActivity();
+    }
+
+//    public ServiceConnection mServiceConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+//            MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
+//            mMusicService = binder.getMusicBinder();
+//            updateUI();
+//            mMusicService.getListenner(new MediaPlaybackService.Listenner() {
+//                @Override
+//                public void onItemListenner() {
+//                    updateUI();
+//                }
+//
+//                @Override
+//                public void actionNotification() {
+//                    updateUI();
+//                }
+//
+//            });
+//            mExitService = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName componentName) {
+//            mExitService = false;
+//        }
+//    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+//        Intent it = new Intent(getActivity(), MediaPlaybackService.class);
+//        getActivity().bindService(it, mServiceConnection, 0);
+    }
 
     public void updateUI() {
-        updateTime();
-       mSeekBar.setMax(mMusicService.getDurationSong()); // chuyen luu sang service
-        mNameSong.setText(mMusicService.getmNameSong() + "");
-        mArtist.setText(mMusicService.getmArtist());
-        mTimeFinish.setText(mMusicService.getDuration());
-        if (!mMusicService.getmPath().equals(""))
-            if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
-                imgBackGround.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
-                mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
-            } else {
-                imgBackGround.setImageResource(R.drawable.default_cover_art);
-                mdisk.setImageResource(R.drawable.default_cover_art);
+        if(mMusicService!=null) {
+            if (mMusicService.isMusicPlay()) {
+             //   updateFragment.updateFragment();
+                updateTime();
+                mSeekBar.setMax(mMusicService.getDurationSong());
+                mNameSong.setText(mMusicService.getmNameSong() + "");
+                mArtist.setText(mMusicService.getmArtist());
+                mTimeFinish.setText(mMusicService.getDuration());
+                if (!mMusicService.getmPath().equals(""))
+                    if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
+                        imgBackGround.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
+                        mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
+                    } else {
+                        imgBackGround.setImageResource(R.drawable.default_cover_art);
+                        mdisk.setImageResource(R.drawable.default_cover_art);
+                    }
+                if (mMusicService.isPlaying()) {
+                    btPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled_black_50dp);
+
+                } else {
+                    btPlay.setBackgroundResource(R.drawable.ic_play_circle_filled_black_50dp);
+                }
+
+                if (mMusicService.ismShuffleSong()) {
+                    btShuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow_24dp);
+                } else
+                    btShuffle.setBackgroundResource(R.drawable.ic_shuffle_black_50dp);
+
+                if (mMusicService.getmLoopSong() == 0) {
+                    btRepeat.setBackgroundResource(R.drawable.ic_repeat_white_24dp);
+                } else {
+                    if (mMusicService.getmLoopSong() == -1) {
+                        btRepeat.setBackgroundResource(R.drawable.ic_repeat_yellow_24dp);
+                    } else
+                        btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
+                }
             }
-        if (mMusicService.isPlaying()) {
-            btPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled_black_50dp);
-
-        } else {
-            btPlay.setBackgroundResource(R.drawable.ic_play_circle_filled_black_50dp);
-        }
-
-        if (mMusicService.ismShuffleSong()) {
-            btShuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow_24dp);
-        } else
-            btShuffle.setBackgroundResource(R.drawable.ic_shuffle_black_50dp);
-
-        if (mMusicService.getmLoopSong() == 0) {
-            btRepeat.setBackgroundResource(R.drawable.ic_repeat_white_24dp);
-        } else {
-            if (mMusicService.getmLoopSong() == -1) {
-                btRepeat.setBackgroundResource(R.drawable.ic_repeat_yellow_24dp);
-            } else
-                btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
         }
     }
 
@@ -85,16 +136,18 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         btRepeat = view.findViewById(R.id.repeat);
         btShuffle = view.findViewById(R.id.shuffle);
         mNameSong.setSelected(true);
+        if(getActivity().findViewById(R.id.frament1)!=null)
+            btListMusic.setVisibility(View.GONE);
 
     }
 
     public void setmMusicService(MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
+
         mMusicService.getListenner(new MediaPlaybackService.Listenner() {
             @Override
             public void onItemListenner() {
-                // if(getActivity().findViewById(R.id.framentContent)!=null)
-                //   updateUI();
+                 updateUI();
             }
 
             @Override
@@ -103,13 +156,13 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
             }
 
         });
+        Log.e("service", "ok"+mMusicService);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (getActivity().findViewById(R.id.framentContent) != null)
-            updateUI();
+
     }
 
     @Nullable
@@ -119,7 +172,7 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         initView(view);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
-        //  mSeekBar.setMax(mMusicService.getDurationSong());
+      Log.e("service", "ok4"+mMusicService);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -178,6 +231,7 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         btPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.e("service", "ok3"+mMusicService);
                 mMusicService.previousSong();
                 mSeekBar.setMax(mMusicService.getDurationSong());
                 updateUI();
@@ -199,11 +253,10 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
                     mMusicService.nextSong();
                     mSeekBar.setMax(mMusicService.getDurationSong());
                     updateUI();
-
                 }
             }
         });
-        // updateUI();
+       updateUI();
         return view;
     }
 
@@ -220,7 +273,7 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
                     @Override
                     public void onCompletion(MediaPlayer media) {
                  mMusicService.onCompletionSong();
-                        updateUI();
+                   updateUI();
                     }
                 });
 
@@ -228,7 +281,6 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
             }
         }, 100);
     }
-
 
     @Override
     public void updateFragment() {

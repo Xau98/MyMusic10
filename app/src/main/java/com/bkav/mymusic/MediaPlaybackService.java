@@ -48,6 +48,7 @@ public class MediaPlaybackService extends Service {
     private List<Song> mListAllSong = new ArrayList<>();
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private SharedPreferences mSharePreferences;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -330,7 +331,12 @@ public class MediaPlaybackService extends Service {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
+            getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer media) {
+                      onCompletionSong();
+                    }
+                });
                 handler.postDelayed(this, 500);
             }
         }, 100);
@@ -372,7 +378,6 @@ public class MediaPlaybackService extends Service {
 
     public interface Listenner {
         void onItemListenner();
-
         void actionNotification();
 
     }
