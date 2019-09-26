@@ -1,6 +1,7 @@
 package com.bkav.mymusic;
 
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,11 +21,11 @@ import androidx.fragment.app.Fragment;
 
 import java.text.SimpleDateFormat;
 
-public class MediaPlaybackFragment extends Fragment {
+public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
 
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
-    private ImageView btRepeat, btShuffle, imgBackGround,btLike, btDislike, btPrevious, btNext, btListMusic, btMore;
+    private ImageView btRepeat, btShuffle, imgBackGround, btLike, btDislike, btPrevious, btNext, btListMusic, btMore;
     private ImageButton btPlay;
     private SeekBar mSeekBar;
     private TextView mTimeStart, mTimeFinish, mArtist, mNameSong;
@@ -31,6 +33,7 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void updateUI() {
         updateTime();
+       mSeekBar.setMax(mMusicService.getDurationSong()); // chuyen luu sang service
         mNameSong.setText(mMusicService.getmNameSong() + "");
         mArtist.setText(mMusicService.getmArtist());
         mTimeFinish.setText(mMusicService.getDuration());
@@ -38,12 +41,10 @@ public class MediaPlaybackFragment extends Fragment {
             if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
                 imgBackGround.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
                 mdisk.setImageBitmap(mMusicService.imageArtist(mMusicService.getmPath()));
-            } else{
+            } else {
                 imgBackGround.setImageResource(R.drawable.default_cover_art);
                 mdisk.setImageResource(R.drawable.default_cover_art);
             }
-
-
         if (mMusicService.isPlaying()) {
             btPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled_black_50dp);
 
@@ -67,7 +68,7 @@ public class MediaPlaybackFragment extends Fragment {
     }
 
     void initView(View view) {
-        imgBackGround=view.findViewById(R.id.imgBackGround);
+        imgBackGround = view.findViewById(R.id.imgBackGround);
         mNameSong = view.findViewById(R.id.namesong);
         mArtist = view.findViewById(R.id.nameArtist);
         mTimeFinish = view.findViewById(R.id.finishTime);
@@ -89,6 +90,26 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void setmMusicService(MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
+        mMusicService.getListenner(new MediaPlaybackService.Listenner() {
+            @Override
+            public void onItemListenner() {
+                // if(getActivity().findViewById(R.id.framentContent)!=null)
+                //   updateUI();
+            }
+
+            @Override
+            public void actionNotification() {
+                updateUI();
+            }
+
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity().findViewById(R.id.framentContent) != null)
+            updateUI();
     }
 
     @Nullable
@@ -96,8 +117,9 @@ public class MediaPlaybackFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
         initView(view);
-        ((AppCompatActivity ) getActivity() ).getSupportActionBar().hide();
-        mSeekBar.setMax(mMusicService.getDurationSong());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+        //  mSeekBar.setMax(mMusicService.getDurationSong());
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -173,15 +195,18 @@ public class MediaPlaybackFragment extends Fragment {
         btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mMusicService.nextSong();
+                if (mMusicService != null) {
+                    mMusicService.nextSong();
+                    mSeekBar.setMax(mMusicService.getDurationSong());
+                    updateUI();
 
-                mSeekBar.setMax(mMusicService.getDurationSong());
-                updateUI();
+                }
             }
         });
-        updateUI();
+        // updateUI();
         return view;
     }
+
 
     public void updateTime() {
         final Handler handler = new Handler();
@@ -191,11 +216,22 @@ public class MediaPlaybackFragment extends Fragment {
                 SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
                 mTimeStart.setText(formmatTime.format(mMusicService.getCurrentPositionSong()));
                 mSeekBar.setProgress(mMusicService.getCurrentPositionSong());
-                mMusicService.onCompletionSong();
+                mMusicService.getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer media) {
+                 mMusicService.onCompletionSong();
+                        updateUI();
+                    }
+                });
+
                 handler.postDelayed(this, 500);
             }
         }, 100);
     }
 
 
+    @Override
+    public void updateFragment() {
+        updateUI();
+    }
 }

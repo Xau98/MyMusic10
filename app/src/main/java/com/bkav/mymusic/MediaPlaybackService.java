@@ -21,6 +21,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
@@ -45,14 +46,18 @@ public class MediaPlaybackService extends Service {
     private int mLoopSong = 0;// mLoopSong =0 (ko lap)// mLoopSong=-1 (lap ds) //mLoopSong =1 (lap 1)
     private boolean mShuffleSong = false;
     private List<Song> mListAllSong = new ArrayList<>();
-    private SharedPreferences mSharedPreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
-
+    private SharedPreferences mSharePreferences;
     @Override
     public void onCreate() {
         super.onCreate();
-    }
+        mSharePreferences =   getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
+        mPositionCurrent = mSharePreferences.getInt("position", 3);
+        mNameSong=mSharePreferences.getString("nameSong", "Name Song");
+        mArtist=mSharePreferences.getString("nameArtist", "Name Artist");
+        mPath=mSharePreferences.getString("path", "");
 
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -83,6 +88,10 @@ public class MediaPlaybackService extends Service {
 
     public String getmNameSong() {
         return mNameSong;
+    }
+
+    public MediaPlayer getmMediaPlayer() {
+        return mMediaPlayer;
     }
 
     public String getmPath() {
@@ -211,7 +220,7 @@ public class MediaPlaybackService extends Service {
             mMediaPlayer.pause();
         }
         try {
-            Log.d("play song", mPositionCurrent + "//"+mListAllSong.size() );
+            Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPositionCurrent) {
                     Log.d("mPath", mListAllSong.get(i).getFile());
@@ -233,12 +242,13 @@ public class MediaPlaybackService extends Service {
             e.printStackTrace();
         }
         ///SharedPreferences
-        mSharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharePreferences.edit();
         editor.putInt("position", getmPosition());
         editor.putString("nameSong", getmNameSong());
         editor.putString("nameArtist", getmArtist());
         editor.putString("path", mPath);
+        editor.putInt("duration", getDurationSong());
         editor.commit();
     }
 
@@ -284,6 +294,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void nextSong() {
+        Log.d("ok", "ok");
         mMediaPlayer.pause();
         if (mShuffleSong == true) {
             mPositionCurrent = actionShuffleSong();
@@ -326,26 +337,21 @@ public class MediaPlaybackService extends Service {
     }
 
     public void onCompletionSong() {
-        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer media) {
-                mMediaPlayer.pause();
-                if (mLoopSong == 0) {
-                    if (mPositionCurrent < mListAllSong.size() - 1)
-                        mPositionCurrent++;
+        mMediaPlayer.pause();
+        if (mLoopSong == 0) {
+            if (mPositionCurrent < mListAllSong.size() - 1)
+                mPositionCurrent++;
+        } else {
+            if (mLoopSong == -1) {
+                if (mPositionCurrent == mListAllSong.size() - 1) {
+                    mPositionCurrent = 0;
                 } else {
-                    if (mLoopSong == -1) {
-                        if (mPositionCurrent == mListAllSong.size() - 1) {
-                            mPositionCurrent = 0;
-                        } else {
-                            mPositionCurrent++;
-                        }
-                    }
+                    mPositionCurrent++;
                 }
-                playSong(mPositionCurrent);
-                mListenner.actionNotification();
             }
-        });
+        }
+        playSong(mPositionCurrent);
+        mListenner.actionNotification();
     }
 
     public Bitmap imageArtist(String path) {
@@ -366,6 +372,7 @@ public class MediaPlaybackService extends Service {
 
     public interface Listenner {
         void onItemListenner();
+
         void actionNotification();
 
     }

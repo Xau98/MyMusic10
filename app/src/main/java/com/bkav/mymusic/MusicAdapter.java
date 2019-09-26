@@ -156,7 +156,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mConstraintLayout= itemView.findViewById(R.id.constraintLayoutItem);
-            mNameSong = itemView.findViewById(R.id.mNameSong);
+            mNameSong = itemView.findViewById(R.id.nameSong);
             mHours = itemView.findViewById(R.id.hours);
             mStt = itemView.findViewById(R.id.stt);
             mMore = itemView.findViewById(R.id.more);

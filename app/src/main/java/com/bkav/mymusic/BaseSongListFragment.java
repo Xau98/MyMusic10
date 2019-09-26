@@ -52,8 +52,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private SharedPreferences mSharePreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private boolean mExitService = false;
-    private List<Song> mListSongs=new ArrayList<>();
+    private List<Song> mListSongs = new ArrayList<>();
     private int position = 0;
+    UpdateFragment updateFragment;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -76,6 +77,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             });
             mExitService = true;
         }
+
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mExitService = false;
@@ -93,6 +95,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 //            Log.d("size", mListSongs.size() + "//");
 //        }
 //    }
+
+
     public void setSong(List<Song> songs) {
         this.mListSongs = songs;
         mAdapter.setSong(songs);
@@ -115,6 +119,22 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mNameSong = view.findViewById(R.id.namePlaySong);
         mNameSong.setSelected(true);
         constraintLayout = view.findViewById(R.id.constraintLayout);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof UpdateFragment) {
+            updateFragment = (UpdateFragment) context;
+        } else {
+         //   throw new RuntimeException(context.toString() + "Can phai implement");
+        }
     }
 
     @Override
@@ -173,19 +193,23 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                         mMusicService.playSong(mSharePreferences.getInt("position", 0));
                         updateUI();
                     }
+                    updateFragment.updateFragment();
                 }
+
             }
         });
 
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mMusicService.isMusicPlay()) {
-                    mMusicService.playSong(position);
+                if (getActivity().findViewById(R.id.framentContent) != null) {
+                    if (!mMusicService.isMusicPlay()) {
+                        mMusicService.playSong(position);
+                    }
+                    MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
+                    mMediaPlaybackFragment.setmMusicService(mMusicService);
+                    getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.framentContent, mMediaPlaybackFragment).commit();
                 }
-                MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
-                mMediaPlaybackFragment.setmMusicService(mMusicService);
-                getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.framentContent, mMediaPlaybackFragment).commit();
             }
         });
         return view;
@@ -240,11 +264,14 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
+
         mMusicService.playSong(songs.getId());
         updateUI();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
-        Log.d("click :", songs.getTitle()+"//"+songs.getId());
+        Log.d("click :", songs.getTitle() + "//" + songs.getId());
+
     }
+
 
 }

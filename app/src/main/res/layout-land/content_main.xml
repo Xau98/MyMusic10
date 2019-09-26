@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".ActivityMusic"
+    tools:showIn="@layout/app_bar_main">
+
+    <FrameLayout
+        android:id="@+id/frament1"
+        android:layout_width="350dp"
+        android:layout_height="match_parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="-2dp"
+        android:layout_weight="1"
+        tools:layout_editor_absoluteY="8dp">
+    </FrameLayout>
+<FrameLayout
+    android:id="@+id/frament2"
+    android:layout_width="350dp"
+    android:layout_weight="1"
+    class = "com.fragment.NavigationDrawerFragment"
+    android:layout_height="match_parent"/>
+
+</LinearLayout>
