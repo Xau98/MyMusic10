@@ -24,10 +24,9 @@ public class FavoriteSongsProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
-
-
-        return null;
+    public Cursor query(Uri uri, String[] projection, String seclection, String[] seclectionArg, String orderBy) {
+       Cursor cursor =mFavoriteSongsDatabase.query(null,projection,seclection,seclectionArg,orderBy);
+     return cursor;
     }
 
     @Override

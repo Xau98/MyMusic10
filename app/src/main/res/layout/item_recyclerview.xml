@@ -9,10 +9,11 @@
     <TextView
         android:id="@+id/stt"
         android:layout_width="40dp"
-        android:layout_height="41dp"
+        android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="13dp"
         android:gravity="center"
+        android:padding="10dp"
         android:text="index"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

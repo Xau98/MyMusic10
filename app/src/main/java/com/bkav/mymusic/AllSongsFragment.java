@@ -73,15 +73,13 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 String duration = c.getString(4);
                 listMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
                 id++;
-                Log.d(TAG , " Album :" + album);
+                Log.d("info" , " Album :" + album);
                 Log.d("Path :" + path, " Artist :" + artist + " Duration " + duration);
             }while (c.moveToNext());
         }
         mAdapter.updateList(listMusic);
         setSong(listMusic);
     }
-
-    private static final String TAG = "AllSongsFragment";
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {

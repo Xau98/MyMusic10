@@ -57,7 +57,6 @@ public class MediaPlaybackService extends Service {
         mNameSong=mSharePreferences.getString("nameSong", "Name Song");
         mArtist=mSharePreferences.getString("nameArtist", "Name Artist");
         mPath=mSharePreferences.getString("path", "");
-
     }
 
     @Override

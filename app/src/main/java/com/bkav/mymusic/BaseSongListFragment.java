@@ -69,7 +69,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
                 @Override
                 public void onItemListenner() {
-                    Log.d("ok","ok2");
                     updateUI();
                 }
 
@@ -114,11 +113,11 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         super.onResume();
         mAdapter.setmMusicService(mMusicService);
     }
-
-    public void setmMusicService(MediaPlaybackService mMusicService) {
-        this.mMusicService = mMusicService;
-
-    }
+//
+//    public void setmMusicService(MediaPlaybackService mMusicService) {
+//        this.mMusicService = mMusicService;
+//
+//    }
 
     void initView(View view) {
         mRecyclerView = view.findViewById(R.id.recyclerview);
@@ -132,12 +131,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             constraintLayout.setVisibility(View.GONE);
     }
 
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-      //  updateFragment = (UpdateFragment) getActivity();
-    }
 
     @Override
     public void onStart() {
@@ -168,7 +161,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         setHasOptionsMenu(true);
         mSharePreferences = this.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
-        position = mSharePreferences.getInt("position", 3);
+        position = mSharePreferences.getInt("position", 0);
         mNameSong.setText(mSharePreferences.getString("nameSong", "Name Song"));
         mArtist.setText(mSharePreferences.getString("nameArtist", "Name Artist"));
 
@@ -177,6 +170,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                 mdisk.setImageBitmap(imageArtist(mSharePreferences.getString("path", "")));
             } else
                 mdisk.setImageResource(R.drawable.default_cover_art);
+
+        if (mSharePreferences.getString("nameSong", "").equals(""))
+            constraintLayout.setVisibility(View.GONE);
 
         mClickPlay.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -195,8 +191,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                         mMusicService.playSong(mSharePreferences.getInt("position", 0));
                         updateUI();
                     }
-
-                   // updateFragment.updateFragment();
                 }
 
             }
@@ -220,6 +214,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
     public void updateUI() {
         if (mMusicService.isMusicPlay()) {
+            constraintLayout.setVisibility(View.VISIBLE);
             mMusicService.UpdateTime();
             if (mMusicService.isPlaying()) {
                 mClickPlay.setBackgroundResource(R.drawable.ic_pause);
@@ -235,8 +230,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
             mNameSong.setText(mMusicService.getmNameSong());
             mArtist.setText(mMusicService.getmArtist());
+
         }
-        Log.d("adt", "ok");
         mAdapter.notifyDataSetChanged();
     }
 
@@ -245,6 +240,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         super.onCreateOptionsMenu(menu, inflater);
         inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+        Log.d("search", "search");
         MenuItem menuItem = menu.findItem(R.id.app_bar_search);
         SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -270,18 +266,9 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         }
         mMusicService.playSong(songs.getId());
         updateUI();
-       // updateFragment.updateFragment();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
     }
 
-
-
-
-//    @Override
-//    public void updateFragment() {
-//        updateUI();
-//    }
-//
 }

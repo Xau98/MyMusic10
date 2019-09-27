@@ -87,7 +87,7 @@ public class ActivityMusic extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
 
-     if(findViewById(R.id.frament1)!=null&& findViewById(R.id.frament2)!=null){
+     if(findViewById(R.id.frament1)!=null && findViewById(R.id.frament2)!=null){
          Toast.makeText(this, "fragment 1,2", Toast.LENGTH_SHORT).show();
          getSupportFragmentManager().beginTransaction().replace(R.id.frament1, mAllSongsFragment).commit();
          getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
