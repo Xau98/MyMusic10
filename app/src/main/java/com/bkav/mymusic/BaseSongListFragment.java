@@ -40,7 +40,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class BaseSongListFragment extends Fragment implements MusicAdapter.OnClickItemView ,UpdateFragment {
+public class BaseSongListFragment extends Fragment implements MusicAdapter.OnClickItemView  {
 
     private RecyclerView mRecyclerView;
     protected MusicAdapter mAdapter;
@@ -55,7 +55,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private List<Song> mListSongs = new ArrayList<>();
     private int position = 0;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
-    private UpdateFragment updateFragment;
+
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -64,11 +64,12 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mAdapter.setmMusicService(mMusicService);
             mMusicService.setmListAllSong(mListSongs);
             updateUI();
-            MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
+          //  MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
          //   mMediaPlaybackFragment.setmMusicService(mMusicService);
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
                 @Override
                 public void onItemListenner() {
+                    Log.d("ok","ok2");
                     updateUI();
                 }
 
@@ -114,6 +115,11 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mAdapter.setmMusicService(mMusicService);
     }
 
+    public void setmMusicService(MediaPlaybackService mMusicService) {
+        this.mMusicService = mMusicService;
+
+    }
+
     void initView(View view) {
         mRecyclerView = view.findViewById(R.id.recyclerview);
         mClickPlay = view.findViewById(R.id.play);
@@ -130,7 +136,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        updateFragment = (UpdateFragment) getActivity();
+      //  updateFragment = (UpdateFragment) getActivity();
     }
 
     @Override
@@ -190,7 +196,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                         updateUI();
                     }
 
-                    updateFragment.updateFragment();
+                   // updateFragment.updateFragment();
                 }
 
             }
@@ -230,6 +236,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mNameSong.setText(mMusicService.getmNameSong());
             mArtist.setText(mMusicService.getmArtist());
         }
+        Log.d("adt", "ok");
         mAdapter.notifyDataSetChanged();
     }
 
@@ -261,18 +268,20 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
-
         mMusicService.playSong(songs.getId());
         updateUI();
+       // updateFragment.updateFragment();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
-
     }
 
 
-    @Override
-    public void updateFragment() {
-        updateUI();
-    }
+
+
+//    @Override
+//    public void updateFragment() {
+//        updateUI();
+//    }
+//
 }

@@ -47,7 +47,7 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 public class ActivityMusic extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener ,UpdateFragment{
+        implements NavigationView.OnNavigationItemSelectedListener {
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
     private  MediaPlaybackFragment  mMediaPlaybackFragment= new MediaPlaybackFragment();;
@@ -59,6 +59,7 @@ public class ActivityMusic extends AppCompatActivity
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
             mMediaPlaybackFragment.setmMusicService(mMusicService);
+            //mAllSongsFragment.setmMusicService(mMusicService);
             mExitService = true;
         }
 
@@ -212,12 +213,12 @@ public class ActivityMusic extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void updateFragment() {
-        if(findViewById(R.id.frament1)!=null&& findViewById(R.id.frament2)!=null) {
-        //    mAllSongsFragment.updateUI();
-            //  if(findViewById(R.id.framentContent)!=null)
-           // mMediaPlaybackFragment.updateUI();
-        }
-    }
+//    @Override
+//        public void updateFragment() {
+//            if(findViewById(R.id.frament1)!=null&& findViewById(R.id.frament2)!=null) {
+//                //    mAllSongsFragment.updateUI();
+//                //  if(findViewById(R.id.framentContent)!=null)
+//                // mMediaPlaybackFragment.updateUI();
+//            }
+//    }
 }

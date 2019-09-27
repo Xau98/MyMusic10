@@ -56,7 +56,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         if (mSong != null) {
             Song current = mSong.get(position);
             holder.mStt.setText(current.getId() + "");
-           // Log.d(current.getId() + "show", current.getTitle());
             holder.mNameSong.setText(current.getTitle());
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
             holder.mHours.setText(formmatTime.format(current.getDuration()));
@@ -65,7 +64,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             holder.mConstraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(finalCurrent.getId() +"position ", position+"//"+ finalCurrent.getTitle());
                     mClickItemView.clickItem(finalCurrent);
                 }
             });

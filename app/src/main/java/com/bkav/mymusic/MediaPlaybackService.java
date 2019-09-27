@@ -48,7 +48,7 @@ public class MediaPlaybackService extends Service {
     private List<Song> mListAllSong = new ArrayList<>();
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private SharedPreferences mSharePreferences;
-
+    private  ConnectSeviceFragmentInterface mConnectSeviceFragment2;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -85,6 +85,10 @@ public class MediaPlaybackService extends Service {
 
     public void getListenner(Listenner listenner) {
         this.mListenner = listenner;
+    }
+
+    public void getListenner2(ConnectSeviceFragmentInterface listenner2) {
+        this.mConnectSeviceFragment2 =listenner2;
     }
 
     public String getmNameSong() {
@@ -231,12 +235,13 @@ public class MediaPlaybackService extends Service {
                     mMediaPlayer.setWakeMode(getApplicationContext(),
                             PowerManager.PARTIAL_WAKE_LOCK);
                     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    mListenner.onItemListenner();
                     mMediaPlayer.start();
                     mPath = mListAllSong.get(i).getFile();
                     mNameSong = mListAllSong.get(i).getTitle();
                     mArtist = mListAllSong.get(i).getArtist();
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
+                    mListenner.onItemListenner();
+                    mConnectSeviceFragment2.onActionConnectSeviceFragment();
                 }
             }
         } catch (IOException e) {
@@ -295,7 +300,6 @@ public class MediaPlaybackService extends Service {
     }
 
     public void nextSong() {
-        Log.d("ok", "ok");
         mMediaPlayer.pause();
         if (mShuffleSong == true) {
             mPositionCurrent = actionShuffleSong();
@@ -305,8 +309,10 @@ public class MediaPlaybackService extends Service {
             else
                 mPositionCurrent++;
         }
+        mListenner.onItemListenner();
         playSong(mPositionCurrent);
         mListenner.actionNotification();
+
     }
 
     public int actionShuffleSong() {
@@ -380,6 +386,10 @@ public class MediaPlaybackService extends Service {
         void onItemListenner();
         void actionNotification();
 
+    }
+
+    public interface  ConnectSeviceFragmentInterface{
+        void  onActionConnectSeviceFragment();
     }
 
     class MusicBinder extends Binder {

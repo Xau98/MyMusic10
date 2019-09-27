@@ -5,6 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,7 +30,9 @@ import androidx.fragment.app.Fragment;
 
 import java.text.SimpleDateFormat;
 
-public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
+import static android.content.Context.MODE_PRIVATE;
+
+public class MediaPlaybackFragment extends Fragment   {
 
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
@@ -35,13 +41,10 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
     private SeekBar mSeekBar;
     private TextView mTimeStart, mTimeFinish, mArtist, mNameSong;
     private ImageView mdisk;
-    UpdateFragment updateFragment;
+    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
+    private SharedPreferences mSharePreferences;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        updateFragment =(UpdateFragment) getActivity();
-    }
+
 
 //    public ServiceConnection mServiceConnection = new ServiceConnection() {
 //        @Override
@@ -70,19 +73,21 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
 //        }
 //    };
 
-    @Override
-    public void onStart() {
-        super.onStart();
+//    @Override
+//    public void onStart() {
+//        super.onStart();
 //        Intent it = new Intent(getActivity(), MediaPlaybackService.class);
 //        getActivity().bindService(it, mServiceConnection, 0);
-    }
+//    }
 
     public void updateUI() {
-        if(mMusicService!=null) {
+        if (mMusicService != null&& mSeekBar!=null) {
             if (mMusicService.isMusicPlay()) {
-             //   updateFragment.updateFragment();
+             //   if(getActivity().findViewById(R.id.frament2)!=null)
+               // updateFragment.updateFragment("lop");
                 updateTime();
-                mSeekBar.setMax(mMusicService.getDurationSong());
+
+               mSeekBar.setMax(mMusicService.getDurationSong());
                 mNameSong.setText(mMusicService.getmNameSong() + "");
                 mArtist.setText(mMusicService.getmArtist());
                 mTimeFinish.setText(mMusicService.getDuration());
@@ -119,6 +124,7 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
     }
 
     void initView(View view) {
+
         imgBackGround = view.findViewById(R.id.imgBackGround);
         mNameSong = view.findViewById(R.id.namesong);
         mArtist = view.findViewById(R.id.nameArtist);
@@ -136,33 +142,20 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         btRepeat = view.findViewById(R.id.repeat);
         btShuffle = view.findViewById(R.id.shuffle);
         mNameSong.setSelected(true);
-        if(getActivity().findViewById(R.id.frament1)!=null)
+        if (getActivity().findViewById(R.id.frament1) != null)
             btListMusic.setVisibility(View.GONE);
 
     }
 
-    public void setmMusicService(MediaPlaybackService mMusicService) {
+    public void setmMusicService(final MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
-
-        mMusicService.getListenner(new MediaPlaybackService.Listenner() {
+        updateUI();
+        mMusicService.getListenner2(new MediaPlaybackService.ConnectSeviceFragmentInterface() {
             @Override
-            public void onItemListenner() {
-                 updateUI();
-            }
-
-            @Override
-            public void actionNotification() {
+            public void onActionConnectSeviceFragment() {
                 updateUI();
             }
-
         });
-        Log.e("service", "ok"+mMusicService);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
     }
 
     @Nullable
@@ -172,7 +165,6 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         initView(view);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
-      Log.e("service", "ok4"+mMusicService);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -188,6 +180,7 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
                 mMusicService.seekToSong(mSeekBar.getProgress());
             }
         });
+
 
         btListMusic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,7 +224,6 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         btPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("service", "ok3"+mMusicService);
                 mMusicService.previousSong();
                 mSeekBar.setMax(mMusicService.getDurationSong());
                 updateUI();
@@ -256,10 +248,9 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
                 }
             }
         });
-       updateUI();
+        updateUI();
         return view;
     }
-
 
     public void updateTime() {
         final Handler handler = new Handler();
@@ -272,8 +263,8 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
                 mMusicService.getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer media) {
-                 mMusicService.onCompletionSong();
-                   updateUI();
+                        mMusicService.onCompletionSong();
+                        updateUI();
                     }
                 });
 
@@ -282,8 +273,5 @@ public class MediaPlaybackFragment extends Fragment implements UpdateFragment {
         }, 100);
     }
 
-    @Override
-    public void updateFragment() {
-        updateUI();
-    }
+
 }
