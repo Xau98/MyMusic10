@@ -1,11 +1,13 @@
 package com.bkav.mymusic;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 public class FavoriteSongsDatabase extends SQLiteOpenHelper {
     private static final String DEBUG_TAG = "FavoriteSongs";
@@ -14,25 +16,25 @@ public class FavoriteSongsDatabase extends SQLiteOpenHelper {
 
     private static final String TABLE_LISTSONGS = "listsongs";
     private static final String ID_LIST= "id";
-    private static final String DATA   = "data";
-    private static final String TITLE  = "title";
-    private static final String ALBUM  = "album";
-    private static final String ARTIST = "artist";
-    private static final String DURATION = "duration";
-    private static final String CREATE_TABLE_LISTSONGS =
-            "craete table"+TABLE_LISTSONGS+"("+
+      static final String DATA   = "data";
+      static final String TITLE  = "title";
+      static final String ALBUM  = "album";
+      static final String ARTIST = "artist";
+      static final String DURATION = "duration";
+      static final String CREATE_TABLE_LISTSONGS =
+            "create table " +TABLE_LISTSONGS+"("+
                     ID_LIST + "integer primary key autoincrement," +
+                    DATA +"text ,"+
                     TITLE + "text ," +
                     ALBUM + "text ," +
                     ARTIST + "text ," +
-                    DURATION + "integer ," +
+                    DURATION + "integer " +
                     ");";
 
     private static final String TABLE_FAVORITESONGS = "favoritesongs";
     private static final String ID_FAVORITE = "id";
     private static final String FAVORITE = "favorite";
     private static final String COUNT = "count";
-
     private static final String CREATE_TABLE_FAVORITESONGS =
             "create table " + TABLE_FAVORITESONGS + "(" +
             ID_FAVORITE + "integer primary key autoincrement," +
@@ -59,12 +61,41 @@ public class FavoriteSongsDatabase extends SQLiteOpenHelper {
         }
 
         Cursor cursor = queryBuilder.query(database,projection,selection,selectionArg,null,null,orderBy);
-
         return cursor;
+    }
+
+    public long insert(ContentValues values){
+
+        try {
+            long insertDB= database.insert(CREATE_TABLE_LISTSONGS,null, values);
+            return insertDB;
+        }catch (Exception ex){
+            Log.e("Error insert", ex+"");
+        }
+        return 0;
+    }
+
+    public  int delete(String selection , String [] selectionArg){
+    try {
+        return database.delete(CREATE_TABLE_LISTSONGS,selection,selectionArg);
+    }catch (Exception ex){
+        Log.e("Error delete", ""+ex);
+    }
+    return 0;
+    }
+
+    public int update(ContentValues values , String selection, String []selectionArg){
+        try{
+            return  database.update(CREATE_TABLE_LISTSONGS,values, selection,selectionArg );
+        }catch (Exception ex){
+            Log.e("Error update", ""+ex);
+        }
+        return 0;
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        database.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITESONGS);
+        onCreate(database);
     }
 }

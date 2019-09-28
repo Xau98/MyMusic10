@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -241,6 +242,15 @@ public class MediaPlaybackService extends Service {
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
                     mListenner.onItemListenner();
                     mConnectSeviceFragment2.onActionConnectSeviceFragment();
+
+                    //==
+//                    ContentValues values = new ContentValues();
+//                    values.put(FavoriteSongsDatabase.DATA,mListAllSong.get(i).getFile());
+//                    values.put(FavoriteSongsDatabase.TITLE,mListAllSong.get(i).getTitle());
+//                    values.put(FavoriteSongsDatabase.ARTIST,mListAllSong.get(i).getArtist());
+//                    values.put(FavoriteSongsDatabase.DURATION,mListAllSong.get(i).getDuration());
+//                    Uri uri = getContentResolver().insert(FavoriteSongsProvider.CONTENT_URI,values);
+//                    Toast.makeText(this, uri.toString()+"//", Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (IOException e) {
