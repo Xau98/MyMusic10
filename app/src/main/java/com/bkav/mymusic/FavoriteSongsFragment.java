@@ -18,6 +18,7 @@ public class FavoriteSongsFragment  extends BaseSongListFragment  {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Toast.makeText(getContext(), "F//"+mMusicService, Toast.LENGTH_SHORT).show();
+        setHasOptionsMenu(true);
         return super.onCreateView(inflater, container, savedInstanceState);
 
     }

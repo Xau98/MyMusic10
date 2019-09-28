@@ -2,6 +2,7 @@ package com.bkav.mymusic;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -127,7 +129,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mNameSong = view.findViewById(R.id.namePlaySong);
         mNameSong.setSelected(true);
         constraintLayout = view.findViewById(R.id.constraintLayout);
-        if(getActivity().findViewById(R.id.frament1)!=null)
+        if(getActivity().findViewById(R.id.frament2)!=null)
             constraintLayout.setVisibility(View.GONE);
     }
 
@@ -240,7 +242,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         super.onCreateOptionsMenu(menu, inflater);
         inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-        Log.d("search", "search");
+//        Log.d("search", Log.getStackTraceString(new Exception()));
+//        Log.d("search", "search");
         MenuItem menuItem = menu.findItem(R.id.app_bar_search);
         SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -269,6 +272,14 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
+        ContentValues values = new ContentValues();
+        values.put("id",songs.getId());
+      //  values.put(FavoriteSongsProvider.DATA,"'"+songs.getFile()+"'");
+        values.put("title","'"+songs.getTitle()+"'");
+      //  values.put(FavoriteSongsProvider.ARTIST,"'"+songs.getArtist()+"'");
+       // values.put(FavoriteSongsProvider.DURATION,songs.getDuration()+"");
+        Uri uri = getActivity().getContentResolver().insert(FavoriteSongsProvider.CONTENT_URI,values);
+        Toast.makeText(getContext(), uri.toString()+"//", Toast.LENGTH_SHORT).show();
     }
 
 }

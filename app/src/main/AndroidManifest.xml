@@ -13,9 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
          <provider
-             android:authorities="com.bkav.mymusic"
-             android:multiprocess="true"
-             android:name="com.bkav.mymusic.FavoriteSongsProvider"/>
+             android:authorities="com.bkav.provider"
+             android:name="FavoriteSongsProvider"/>
         <activity
             android:name=".ActivityMusic"
             android:label="Music"

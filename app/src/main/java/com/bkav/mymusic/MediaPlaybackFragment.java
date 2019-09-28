@@ -142,7 +142,7 @@ public class MediaPlaybackFragment extends Fragment   {
         btRepeat = view.findViewById(R.id.repeat);
         btShuffle = view.findViewById(R.id.shuffle);
         mNameSong.setSelected(true);
-        if (getActivity().findViewById(R.id.frament1) != null)
+        if (getActivity().findViewById(R.id.frament2) != null)
             btListMusic.setVisibility(View.GONE);
 
     }

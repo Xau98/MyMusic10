@@ -14,6 +14,8 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -48,6 +50,8 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
       Toast.makeText(getContext(), "//"+mMusicService, Toast.LENGTH_SHORT).show();
         getLoaderManager().initLoader(LOADER_ID, null, this);
+//        Log.d("search", Log.getStackTraceString(new Exception()));
+        Log.d("all song", "all song");
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -63,7 +67,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor c) {
         ArrayList<Song> listMusic = new ArrayList<>();
         int id = 0;
-        if (c != null) {
+        if (c != null && c.getCount()>0) {
             c.moveToFirst();
             do{
                 String path = c.getString(0);

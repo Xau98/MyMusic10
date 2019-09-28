@@ -87,15 +87,16 @@ private FavoriteSongsFragment mFavoriteSongsFragment=new FavoriteSongsFragment()
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
 
-     if(findViewById(R.id.frament1)!=null && findViewById(R.id.frament2)!=null){
-         Toast.makeText(this, "fragment 1,2", Toast.LENGTH_SHORT).show();
-         getSupportFragmentManager().beginTransaction().replace(R.id.frament1, mAllSongsFragment).commit();
-         getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
-     }
-
-     if(findViewById(R.id.framentContent)!=null) {
-         Toast.makeText(this, "fragment content", Toast.LENGTH_SHORT).show();
+     if(findViewById(R.id.frament2)!=null){
+//         Toast.makeText(this, "fragment 1,2", Toast.LENGTH_SHORT).show();
+         Log.d("search", "onCreate: frament1");
          getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+         getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
+     }else if(findViewById(R.id.framentContent)!=null) {
+         Log.d("search", "onCreate: framentContent");
+//         Toast.makeText(this, "fragment content", Toast.LENGTH_SHORT).show();
+         getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+
      }
 
     }
