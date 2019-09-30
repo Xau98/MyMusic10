@@ -31,7 +31,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     private Context mContext;
     private OnClickItemView mClickItemView;
     private MediaPlaybackService mMusicService;
-    public MusicAdapter(OnClickItemView mClickItemView, Context context ) {
+
+    public MusicAdapter(OnClickItemView mClickItemView, Context context) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         this.mClickItemView = mClickItemView;
@@ -75,10 +76,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                     //holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
                     holder.mStt.setBackgroundResource(R.drawable.ic_equalizer_black_24dp);
-                }else {
+                } else {
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
                     holder.mStt.setBackgroundResource(R.drawable.ic_equalizer_while_24dp);
-                //    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_while_24dp, 0, 0, 0);
+                    //    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_while_24dp, 0, 0, 0);
                 }
             }
         } else {
@@ -103,11 +104,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
     public void updateList(List<Song> songs) {
         mSong = songs;
-       mListSong = new ArrayList<>(mSong);
+        mListSong = new ArrayList<>(mSong);
         notifyDataSetChanged();
-
-
     }
+
     public Filter getFilter() {
         return filter;
     }
@@ -153,9 +153,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         ImageButton mMore;
         TextView mStt;
         ConstraintLayout mConstraintLayout;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mConstraintLayout= itemView.findViewById(R.id.constraintLayoutItem);
+            mConstraintLayout = itemView.findViewById(R.id.constraintLayoutItem);
             mNameSong = itemView.findViewById(R.id.namesong);
             mHours = itemView.findViewById(R.id.hours);
             mStt = itemView.findViewById(R.id.stt);
@@ -164,6 +165,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     }
 
     interface OnClickItemView {
-     void clickItem( Song song);
+        void clickItem(Song song);
     }
 }

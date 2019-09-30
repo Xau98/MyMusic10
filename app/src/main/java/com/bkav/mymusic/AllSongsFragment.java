@@ -1,12 +1,8 @@
 package com.bkav.mymusic;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,10 +44,10 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-      Toast.makeText(getContext(), "//"+mMusicService, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getContext(), "//" + mMusicService, Toast.LENGTH_SHORT).show();
         getLoaderManager().initLoader(LOADER_ID, null, this);
 //        Log.d("search", Log.getStackTraceString(new Exception()));
-        Log.d("all song", "all song");
+     //   Log.d("all song", "all song");
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -67,28 +63,37 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor c) {
         ArrayList<Song> listMusic = new ArrayList<>();
         int id = 0;
-        if (c != null && c.getCount()>0) {
+        if (c != null && c.getCount() > 0) {
             c.moveToFirst();
-            do{
+            do {
                 String path = c.getString(0);
                 String album = c.getString(1);
                 String artist = c.getString(2);
                 String name = c.getString(3);
                 String duration = c.getString(4);
                 listMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
-                id++;
-                Log.d("info" , " Album :" + album);
+                //==========//
+                ContentValues values = new ContentValues();
+                values.put(FavoriteSongsProvider.ID_PROVIDER, id);
+                values.put(FavoriteSongsProvider.FAVORITE, 0);
+                values.put(FavoriteSongsProvider.COUNT, 0);
+                Uri uri = getActivity().getContentResolver().insert(FavoriteSongsProvider.CONTENT_URI, values);
+               // Toast.makeText(getContext(), "add song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                //========//
+                Log.d("info", " Album :" + album);
                 Log.d("Path :" + path, " Artist :" + artist + " Duration " + duration);
-            }while (c.moveToNext());
+                id++;
+            } while (c.moveToNext());
         }
         mAdapter.updateList(listMusic);
         setSong(listMusic);
+
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-       if(mAdapter!=null){
-           mAdapter.setSong(new ArrayList<Song>());
-       }
+        if (mAdapter != null) {
+            mAdapter.setSong(new ArrayList<Song>());
+        }
     }
 }

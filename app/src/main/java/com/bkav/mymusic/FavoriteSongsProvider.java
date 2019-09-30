@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -21,34 +22,37 @@ public class FavoriteSongsProvider extends ContentProvider {
 
     private static final String DB_SONGS = "db_songs1";
     private static final String AUTHORITY = "com.bkav.provider";
-    private static final String CONTENT_PATH = "listsongs";
-    static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + CONTENT_PATH);
-    private static final String TABLE_LISTSONGS = "listsongs";
-    private static final String DEBUG_TAG = "FavoriteSongs";
     private static final int DB_VESION = 1;
-    private static final String ID_LIST = "id";
-    static final String DATA = "data";
-    static final String TITLE = "title";
-    static final String ALBUM = "album";
-    static final String ARTIST = "artist";
-    static final String DURATION = "duration";
-    static final String CREATE_TABLE_LISTSONGS =
-            "CREATE TABLE " + TABLE_LISTSONGS + "(" +
-                    ID_LIST + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                    DATA + " TEXT ," +
-                    TITLE + " TEXT ," +
-                    ARTIST + " TEXT ," +
-                    DURATION + " TEXT " +
-                    ");";
+     static final String CONTENT_PATH = "listsongs";
+     static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + CONTENT_PATH);
+//     static final String TABLE_LISTSONGS = "listsongs";
+//    static final String DEBUG_TAG = "FavoriteSongs";
+//
+//    static final String ID_LIST = "id";
+//    static final String DATA = "data";
+//    static final String TITLE = "title";
+//    static final String ALBUM = "album";
+//    static final String ARTIST = "artist";
+//    static final String DURATION = "duration";
+//    static final String CREATE_TABLE_LISTSONGS =
+//            "CREATE TABLE " + TABLE_LISTSONGS + "(" +
+//                    ID_LIST + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
+//                    DATA + " TEXT ," +
+//                    TITLE + " TEXT ," +
+//                    ARTIST + " TEXT ," +
+//                    DURATION + " TEXT " +
+//                    ");";
 
     private static final String TABLE_FAVORITESONGS = "favoritesongs";
-    private static final String ID_FAVORITE = "id";
-    private static final String FAVORITE = "favorite";
-    private static final String COUNT = "count";
-    private static final String CREATE_TABLE_FAVORITESONGS =
-            "create table " + TABLE_FAVORITESONGS + "( id integer primary key autoincrement," +
-                    FAVORITE + "integer default -1, " +
-                    COUNT + "integer default 0  );";
+     static final String ID_FAVORITE = "id";
+     static final String ID_PROVIDER ="id_provider";
+     static final String FAVORITE = "is_favorite";
+     static final String COUNT = "count_of_play";
+     static final String CREATE_TABLE_FAVORITESONGS =
+            "create table " + TABLE_FAVORITESONGS + "( "+ID_FAVORITE+" integer primary key autoincrement," +
+                            ID_PROVIDER + " integer ,"+
+                            FAVORITE + " integer default 0, " + //  0 : not like // 1 : stop like // 2 : like
+                            COUNT + " integer default 0  );"; // number click // if count =3 => is_favorite=1 expect  is_favorite=1
 
 
     private static HashMap<String, String> HASMAP;
@@ -68,21 +72,18 @@ public class FavoriteSongsProvider extends ContentProvider {
 
         public FavoriteSongsDatabase(@Nullable Context context) {
             super(context, DB_SONGS, null, DB_VESION);
-
         }
 
-        private static final String TAG = "FavoriteSongsDatabase";
         @Override
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
+            //sqLiteDatabase.execSQL(CREATE_TABLE_LISTSONGS);
             sqLiteDatabase.execSQL(CREATE_TABLE_FAVORITESONGS);
-            sqLiteDatabase.execSQL(CREATE_TABLE_LISTSONGS);
-
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
             sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITESONGS);
-            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_LISTSONGS);
+            //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_LISTSONGS);
             onCreate(sqLiteDatabase);
         }
     }
@@ -100,19 +101,20 @@ public class FavoriteSongsProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String seclection, String[] seclectionArg, String orderBy) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(TABLE_LISTSONGS);
+        queryBuilder.setTables(TABLE_FAVORITESONGS);
         switch (sUriMatcher.match(uri)) {
             case URI_ALL_ITEM_CODE:
+                queryBuilder.setProjectionMap(HASMAP);
                 break;
             case URI_ONE_ITEM_CODE:
+                queryBuilder.appendWhere(ID_FAVORITE+"="+uri.getPathSegments().get(1));
                 break;
             default:
-                throw new
-                        SQLException("Failed to query " + uri);
+
 
         }
         if (orderBy == null || orderBy == "") {
-            orderBy = ID_LIST;
+            orderBy = ID_FAVORITE;
         }
         Cursor cursor = queryBuilder.query(database, projection, seclection, seclectionArg, null, null, orderBy);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -133,7 +135,7 @@ public class FavoriteSongsProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        long rowID = database.insert(TABLE_LISTSONGS, "", contentValues);
+        long rowID = database.insert(TABLE_FAVORITESONGS, "", contentValues);
 
         if (rowID > 0) {
             Uri newUri = ContentUris.withAppendedId(CONTENT_URI, rowID);
@@ -153,6 +155,19 @@ public class FavoriteSongsProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArg) {
         //  return mFavoriteSongsDatabase.update(contentValues, selection, selectionArg);
-        return 0;
+       int count =0;
+       switch (sUriMatcher.match(uri)){
+           case URI_ALL_ITEM_CODE:
+               count= database.update(TABLE_FAVORITESONGS, contentValues, selection,selectionArg);
+                break;
+           case URI_ONE_ITEM_CODE:
+               count= database.update(TABLE_FAVORITESONGS,contentValues,
+                       ID_FAVORITE +" = "+uri.getPathSegments().get(1)+(!TextUtils.isEmpty(selection)?"AND ("+selection +')':""),selectionArg);
+                break;
+            default:
+                //throw new IllegalAccessException("Unknow URI "+uri);
+       }
+       getContext().getContentResolver().notifyChange(uri,null);
+        return count;
     }
 }

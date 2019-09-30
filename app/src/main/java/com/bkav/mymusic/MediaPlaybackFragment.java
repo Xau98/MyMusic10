@@ -2,6 +2,7 @@ package com.bkav.mymusic;
 
 
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -246,6 +248,16 @@ public class MediaPlaybackFragment extends Fragment   {
                     mSeekBar.setMax(mMusicService.getDurationSong());
                     updateUI();
                 }
+            }
+        });
+
+        btLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              ContentValues values = new ContentValues();
+              values.put(FavoriteSongsProvider.FAVORITE,2);
+              getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
+              Toast.makeText(getContext(),  "add song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
             }
         });
         updateUI();

@@ -272,14 +272,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
-        ContentValues values = new ContentValues();
-        values.put("id",songs.getId());
-      //  values.put(FavoriteSongsProvider.DATA,"'"+songs.getFile()+"'");
-        values.put("title","'"+songs.getTitle()+"'");
-      //  values.put(FavoriteSongsProvider.ARTIST,"'"+songs.getArtist()+"'");
-       // values.put(FavoriteSongsProvider.DURATION,songs.getDuration()+"");
-        Uri uri = getActivity().getContentResolver().insert(FavoriteSongsProvider.CONTENT_URI,values);
-        Toast.makeText(getContext(), uri.toString()+"//", Toast.LENGTH_SHORT).show();
+
     }
 
 }

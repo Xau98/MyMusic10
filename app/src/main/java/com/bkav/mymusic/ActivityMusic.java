@@ -46,13 +46,15 @@ import android.view.Menu;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class ActivityMusic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
     private  MediaPlaybackFragment  mMediaPlaybackFragment= new MediaPlaybackFragment();;
     private AllSongsFragment mAllSongsFragment= new AllSongsFragment();
-private FavoriteSongsFragment mFavoriteSongsFragment=new FavoriteSongsFragment();
+private FavoriteSongsFragment mFavoriteSongsFragment ;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -205,6 +207,11 @@ private FavoriteSongsFragment mFavoriteSongsFragment=new FavoriteSongsFragment()
 
         if (id == R.id.nav_favorite) {
             Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
+            //if(mMusicService!=null){
+                mFavoriteSongsFragment =new FavoriteSongsFragment((ArrayList<Song>) mMusicService.getmListAllSong());
+
+           // }
+
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
         } else if (id == R.id.nav_playlist) {
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();

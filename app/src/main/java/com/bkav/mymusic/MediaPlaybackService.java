@@ -127,6 +127,10 @@ public class MediaPlaybackService extends Service {
         this.mListAllSong = mListAllSong;
     }
 
+    public List<Song> getmListAllSong() {
+        return mListAllSong;
+    }
+
     public void showNotification(String nameSong, String artist, String path) {
         createNotificationChannel();
 
@@ -242,7 +246,6 @@ public class MediaPlaybackService extends Service {
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
                     mListenner.onItemListenner();
                     mConnectSeviceFragment2.onActionConnectSeviceFragment();
-
                     //==
 
                 }
