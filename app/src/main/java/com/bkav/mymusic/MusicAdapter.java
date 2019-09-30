@@ -1,16 +1,20 @@
 package com.bkav.mymusic;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -31,6 +35,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     private Context mContext;
     private OnClickItemView mClickItemView;
     private MediaPlaybackService mMusicService;
+    private String mTypeSong="";
 
     public MusicAdapter(OnClickItemView mClickItemView, Context context) {
         mInflater = LayoutInflater.from(context);
@@ -41,6 +46,14 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
     public void setmMusicService(MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
+    }
+
+    public String getmTypeSong() {
+        return mTypeSong;
+    }
+
+    public void setmTypeSong(String mTypeSong) {
+        this.mTypeSong = mTypeSong;
     }
 
     @NonNull
@@ -82,6 +95,44 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                     //    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_while_24dp, 0, 0, 0);
                 }
             }
+            holder.mMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popupMenu = new PopupMenu(mContext, holder.mMore);
+                    if(mTypeSong.equals("AllSong")) {
+                        popupMenu.inflate(R.menu.add_song);
+                    }
+                    if(mTypeSong.equals("FavoriteSong")) {
+                        popupMenu.inflate(R.menu.remove_song);
+                    }
+
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId()){
+                                case R.id.addFavorite:
+                                    ContentValues values = new ContentValues();
+                                    values.put(FavoriteSongsProvider.FAVORITE,2);
+                                    mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
+                                    Toast.makeText(mContext,  "addFavorite song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                                    return true;
+                                case R.id.removeFavorite:
+                                    ContentValues values1 = new ContentValues();
+                                    values1.put(FavoriteSongsProvider.FAVORITE,1);
+                                    values1.put(FavoriteSongsProvider.COUNT,0);
+                                    mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values1,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
+                                    Toast.makeText(mContext,  "removeFavorite song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
+
+                }
+            });
+
+
         } else {
             holder.mNameSong.setText("No Song");
         }

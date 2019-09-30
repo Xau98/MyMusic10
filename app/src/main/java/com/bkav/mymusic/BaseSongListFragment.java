@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
@@ -37,6 +38,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +59,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private List<Song> mListSongs = new ArrayList<>();
     private int position = 0;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
-
+    private  String mURL = "content://com.bkav.provider";
+    private Uri mURISong= Uri.parse(mURL);
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -101,7 +104,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 //        }
 //    }
 
-
     public void setSong(List<Song> songs) {
         this.mListSongs = songs;
         mAdapter.setSong(songs);
@@ -142,6 +144,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mAdapter = new MusicAdapter(this, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        if(mMusicService!=null)
+        mRecyclerView.scrollToPosition(mMusicService.getmPosition());
     }
 
     public Bitmap imageArtist(String path) {
@@ -166,7 +170,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         position = mSharePreferences.getInt("position", 0);
         mNameSong.setText(mSharePreferences.getString("nameSong", "Name Song"));
         mArtist.setText(mSharePreferences.getString("nameArtist", "Name Artist"));
-
+        Log.d("create_db",mSharePreferences.getBoolean("create_db", false)+"//ok");
         if (!mSharePreferences.getString("path", "").equals(""))
             if (imageArtist(mSharePreferences.getString("path", "")) != null) {
                 mdisk.setImageBitmap(imageArtist(mSharePreferences.getString("path", "")));
@@ -271,6 +275,31 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         updateUI();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
+        ///===========///
+        String selection=" id_provider ="+songs.getId();
+        Cursor c = getActivity().managedQuery(mURISong, null, selection, null, null);
+        if(c.moveToFirst()){
+            do{
+               Log.d("ID",c.getString(c.getColumnIndex("id_provider")));
+               if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))!=1)
+               if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))<3){
+                   ContentValues values = new ContentValues();
+                   values.put(FavoriteSongsProvider.COUNT,c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))+1);
+                   getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+songs.getId(),null);
+                   Log.d("ID",c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT))+"//"+c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
+               }else {
+                   if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))==3) {
+                       ContentValues values = new ContentValues();
+                       values.put(FavoriteSongsProvider.COUNT, 0);
+                       values.put(FavoriteSongsProvider.FAVORITE, 2);
+                       getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + songs.getId(), null);
+                       Log.d("ID1", c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT)) + "//" + c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
+                   }
+               }
+
+            }while(c.moveToNext());
+        }
+
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
 
     }

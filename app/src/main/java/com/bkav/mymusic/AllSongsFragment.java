@@ -1,6 +1,8 @@
 package com.bkav.mymusic;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -38,9 +40,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class AllSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
-
+    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
+    private SharedPreferences mSharePreferences;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -63,6 +68,9 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor c) {
         ArrayList<Song> listMusic = new ArrayList<>();
         int id = 0;
+        mSharePreferences =   getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+        boolean isCreate=mSharePreferences.getBoolean("create_db", false);
+        Log.d("create_db F",mSharePreferences.getBoolean("create_db", false)+"//ok");
         if (c != null && c.getCount() > 0) {
             c.moveToFirst();
             do {
@@ -73,11 +81,17 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 String duration = c.getString(4);
                 listMusic.add(new Song(id, name, path, artist, Integer.parseInt(duration)));
                 //==========//
-                ContentValues values = new ContentValues();
-                values.put(FavoriteSongsProvider.ID_PROVIDER, id);
-                values.put(FavoriteSongsProvider.FAVORITE, 0);
-                values.put(FavoriteSongsProvider.COUNT, 0);
-                Uri uri = getActivity().getContentResolver().insert(FavoriteSongsProvider.CONTENT_URI, values);
+                if(isCreate==false){
+                    ContentValues values = new ContentValues();
+                    values.put(FavoriteSongsProvider.ID_PROVIDER, id);
+                    values.put(FavoriteSongsProvider.FAVORITE, 0);
+                    values.put(FavoriteSongsProvider.COUNT, 0);
+                    Uri uri = getActivity().getContentResolver().insert(FavoriteSongsProvider.CONTENT_URI, values);
+                    mSharePreferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mSharePreferences.edit();
+                    editor.putBoolean("create_db", true);
+                    editor.commit();
+                }
                // Toast.makeText(getContext(), "add song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
                 //========//
                 Log.d("info", " Album :" + album);
@@ -87,7 +101,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
         }
         mAdapter.updateList(listMusic);
         setSong(listMusic);
-
+        mAdapter.setmTypeSong("AllSong");
     }
 
     @Override

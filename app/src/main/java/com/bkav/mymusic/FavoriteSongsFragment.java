@@ -23,7 +23,6 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
     public FavoriteSongsFragment(ArrayList<Song> mListAllSong) {
         this.mListAllSong =new ArrayList<>();
         this.mListAllSong = mListAllSong;
-
         Log.e("song Favo",mListAllSong.size()+"//");
     }
 
@@ -34,7 +33,6 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         Toast.makeText(getContext(), "F//"+mMusicService, Toast.LENGTH_SHORT).show();
         getLoaderManager().initLoader(LOADER_ID, null, this);
 //        Log.d("search", Log.getStackTraceString(new Exception()));
-        Log.d("all song", "all song");
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -60,11 +58,11 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
             do {
 
                 for(int i=0;i<mListAllSong.size();i++){
-
+                    //   Log.d("SONG size ","//"+mListAllSong.size());
                      if(mListAllSong.get(i).getId()== cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))){
-                       // Log.d("song F", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//");
+                     Log.d("song F", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//"+mListAllSong.get(i).getId());
                         if( cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.FAVORITE)) == 2){
-                            Log.d("song F1", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//");
+                           // Log.d("song F1", "//"+cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//");
                             song = new Song( mListAllSong.get(i).getId(),
                                     mListAllSong.get(i).getTitle(),
                                     mListAllSong.get(i).getFile(),
@@ -74,17 +72,12 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
                          }
                      }
                 }
-
-
-          //      Log.d("FavoriteSong", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.DATA)) + "///" + cursor.getString(cursor.getColumnIndex(FavoriteSongsProvider.TITLE)));
-
             } while (cursor.moveToNext());
 
         }
-
          mAdapter.updateList(mListFavoriteSongs);
          setSong(mListFavoriteSongs);
-
+        mAdapter.setmTypeSong("FavoriteSong");
     }
 
     @Override

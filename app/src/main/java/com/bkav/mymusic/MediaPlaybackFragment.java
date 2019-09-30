@@ -46,8 +46,6 @@ public class MediaPlaybackFragment extends Fragment   {
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private SharedPreferences mSharePreferences;
 
-
-
 //    public ServiceConnection mServiceConnection = new ServiceConnection() {
 //        @Override
 //        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -257,7 +255,16 @@ public class MediaPlaybackFragment extends Fragment   {
               ContentValues values = new ContentValues();
               values.put(FavoriteSongsProvider.FAVORITE,2);
               getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
-              Toast.makeText(getContext(),  "add song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+              Toast.makeText(getContext(),  "like song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        btDislike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContentValues values = new ContentValues();
+                values.put(FavoriteSongsProvider.FAVORITE,1);
+                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
+                Toast.makeText(getContext(),  "dislike song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
             }
         });
         updateUI();
