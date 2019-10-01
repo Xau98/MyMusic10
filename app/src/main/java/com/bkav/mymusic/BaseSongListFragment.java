@@ -69,6 +69,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mAdapter.setmMusicService(mMusicService);
             mMusicService.setmListAllSong(mListSongs);
             updateUI();
+
           //  MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
          //   mMediaPlaybackFragment.setmMusicService(mMusicService);
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
@@ -133,6 +134,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         constraintLayout = view.findViewById(R.id.constraintLayout);
         if(getActivity().findViewById(R.id.frament2)!=null)
             constraintLayout.setVisibility(View.GONE);
+        else
+            constraintLayout.setVisibility(View.VISIBLE);
     }
 
 
@@ -220,7 +223,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
     public void updateUI() {
         if (mMusicService.isMusicPlay()) {
-            constraintLayout.setVisibility(View.VISIBLE);
+
+            mRecyclerView.scrollToPosition(mMusicService.getmPosition());
             mMusicService.UpdateTime();
             if (mMusicService.isPlaying()) {
                 mClickPlay.setBackgroundResource(R.drawable.ic_pause);
@@ -266,11 +270,12 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     }
 
     @Override
-    public void clickItem(Song songs) {
+    public void clickItem(Song songs , int position) {
         mMusicService.setmPosition(songs.getId());
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
+        mMusicService.setMindex(position);
         mMusicService.playSong(songs.getId());
         updateUI();
         mNameSong.setText(songs.getTitle());
@@ -299,7 +304,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
             }while(c.moveToNext());
         }
-
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
 
     }

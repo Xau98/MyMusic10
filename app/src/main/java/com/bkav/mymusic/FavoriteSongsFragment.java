@@ -20,12 +20,16 @@ import java.util.ArrayList;
 public class FavoriteSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
     private ArrayList<Song> mListAllSong ;
+
     public FavoriteSongsFragment(ArrayList<Song> mListAllSong) {
         this.mListAllSong =new ArrayList<>();
         this.mListAllSong = mListAllSong;
         Log.e("song Favo",mListAllSong.size()+"//");
     }
 
+    public FavoriteSongsFragment(){
+
+    }
 
     @Nullable
     @Override
@@ -63,14 +67,13 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
                      if(mListAllSong.get(i).getId()== cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))){
                      Log.d("song F", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//"+mListAllSong.get(i).getId());
                         if( cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.FAVORITE)) == 2){
-
                            // Log.d("song F1", "//"+cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//");
-                            song = new Song( dem,
+                            song = new Song( mListAllSong.get(i).getId(),
                                     mListAllSong.get(i).getTitle(),
                                     mListAllSong.get(i).getFile(),
                                     mListAllSong.get(i).getArtist(),
                                     mListAllSong.get(i).getDuration());
-                            dem++;
+                          //  dem++;
                             mListFavoriteSongs.add(song);
                          }
                      }
@@ -81,7 +84,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
          mAdapter.updateList(mListFavoriteSongs);
          setSong(mListFavoriteSongs);
         mAdapter.setmTypeSong("FavoriteSong");
-        mAdapter.setmListFavoriteSongs(mListAllSong);
+       // mAdapter.setmListFavoriteSongs(mListAllSong);
     }
 
     @Override

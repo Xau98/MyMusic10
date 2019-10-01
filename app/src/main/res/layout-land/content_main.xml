@@ -10,17 +10,19 @@
 
     <FrameLayout
         android:id="@+id/framentContent"
-        android:layout_width="350dp"
+        android:layout_width="250dp"
         android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginTop="49dp"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="-2dp"
-        android:layout_weight="1"
-        tools:layout_editor_absoluteY="8dp">
-    </FrameLayout>
-<FrameLayout
+        tools:layout_editor_absoluteY="8dp"></FrameLayout>
+
+    <FrameLayout
     android:id="@+id/frament2"
-    android:layout_width="350dp"
+    android:layout_width="450dp"
     android:layout_weight="1"
+     android:layout_marginTop="48dp"
     class = "com.fragment.NavigationDrawerFragment"
     android:layout_height="match_parent"/>
 

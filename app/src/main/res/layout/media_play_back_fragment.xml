@@ -6,14 +6,17 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+
     <ImageView
         android:id="@+id/imgBackGround"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleX="2"
-        android:scaleY="2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/default_cover_art"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -47,8 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="18dp"
-            android:layout_marginRight="18dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
             android:layout_marginBottom="8dp"
             android:src="@drawable/ic_more_vert_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -72,9 +75,9 @@
 
         <TextView
             android:id="@+id/namesong"
-            android:layout_width="245dp"
+            android:layout_width="0dp"
             android:layout_height="23dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="8dp"
@@ -93,8 +96,8 @@
 
         <TextView
             android:id="@+id/nameArtist"
-            android:layout_width="245dp"
-            android:layout_height="21dp"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
@@ -109,7 +112,6 @@
             android:textSize="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/listMusic"
-            app:layout_constraintHorizontal_bias="0.545"
             app:layout_constraintStart_toEndOf="@+id/disk"
             app:layout_constraintTop_toBottomOf="@+id/namesong"
             app:layout_constraintVertical_bias="0.0" />

@@ -54,9 +54,9 @@ public class ActivityMusic extends AppCompatActivity
     private boolean mExitService = false;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
     private AllSongsFragment mAllSongsFragment = new AllSongsFragment();
-    private FavoriteSongsFragment mFavoriteSongsFragment;
-    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
-    private SharedPreferences mSharePreferences;
+   // private FavoriteSongsFragment mFavoriteSongsFragment;
+    //    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
+    //    private SharedPreferences mSharePreferences;
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -209,14 +209,18 @@ public class ActivityMusic extends AppCompatActivity
 
         if (id == R.id.nav_favorite) {
             Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
-            mFavoriteSongsFragment = new FavoriteSongsFragment((ArrayList<Song>) mMusicService.getmListAllSong());
+
+            FavoriteSongsFragment mFavoriteSongsFragment = new FavoriteSongsFragment((ArrayList<Song>) mMusicService.getmListAllSong());
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
 
         } else if (id == R.id.nav_playlist) {
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
         }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 

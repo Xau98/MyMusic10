@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> implements Filterable {
     private List<Song> mListSong = new ArrayList<>();
     private List<Song> mSong;
-    private ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
+    //private ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context mContext;
     private OnClickItemView mClickItemView;
@@ -49,10 +49,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         this.mMusicService = mMusicService;
     }
 
-    public void setmListFavoriteSongs(ArrayList<Song> mListFavoriteSongs) {
-        this.mListFavoriteSongs = mListFavoriteSongs;
-
-    }
+//    public void setmListFavoriteSongs(ArrayList<Song> mListFavoriteSongs) {
+//        this.mListFavoriteSongs = mListFavoriteSongs;
+//
+//    }
 
     public void setmTypeSong(String mTypeSong) {
         this.mTypeSong = mTypeSong;
@@ -80,7 +80,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             holder.mConstraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mClickItemView.clickItem(finalCurrent);
+                    mClickItemView.clickItem(finalCurrent, position);
                 }
             });
 
@@ -124,13 +124,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                                     ContentValues values1 = new ContentValues();
                                     values1.put(FavoriteSongsProvider.FAVORITE, 1);
                                     values1.put(FavoriteSongsProvider.COUNT, 0);
-                                    for (int i = 0; i < mListFavoriteSongs.size(); i++) {
-                                        //     Log.d("name", mListFavoriteSongs.get(i).getTitle());
-                                        if (mListFavoriteSongs.get(i).getTitle().equals(current.getTitle())) {
-                                            mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + mListFavoriteSongs.get(i).getId(), null);
-                                            Log.d("name", mListFavoriteSongs.get(i).getTitle()+"//"+FavoriteSongsProvider.ID_PROVIDER+"///"+mListFavoriteSongs.get(i).getId());
-                                        }
-                                    }
+//                                    for (int i = 0; i < mListFavoriteSongs.size(); i++) {
+//                                        //     Log.d("name", mListFavoriteSongs.get(i).getTitle());
+//                                        if (mListFavoriteSongs.get(i).getTitle().equals(current.getTitle())) {
+                                            mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + current.getId(), null);
+                                          //  Log.d("name", mListFavoriteSongs.get(i).getTitle()+"//"+FavoriteSongsProvider.ID_PROVIDER+"///"+mListFavoriteSongs.get(i).getId());
+                                      //  }
+                                 //   }
                                     Toast.makeText(mContext, "removeFavorite song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();// lôi
                                     return true;
                             }
@@ -226,6 +226,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     }
 
     interface OnClickItemView {
-        void clickItem(Song song);
+        void clickItem(Song song , int index);
     }
 }

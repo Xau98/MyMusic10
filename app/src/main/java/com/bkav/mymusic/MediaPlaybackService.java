@@ -44,6 +44,7 @@ public class MediaPlaybackService extends Service {
     private String mArtist = "";
     private String mNameSong = "";
     private int mPositionCurrent = 0;
+    private int mindex;
     private int mLoopSong = 0;// mLoopSong =0 (ko lap)// mLoopSong=-1 (lap ds) //mLoopSong =1 (lap 1)
     private boolean mShuffleSong = false;
     private List<Song> mListAllSong = new ArrayList<>();
@@ -58,6 +59,7 @@ public class MediaPlaybackService extends Service {
         mNameSong=mSharePreferences.getString("nameSong", "Name Song");
         mArtist=mSharePreferences.getString("nameArtist", "Name Artist");
         mPath=mSharePreferences.getString("path", "");
+
 
     }
 
@@ -110,6 +112,10 @@ public class MediaPlaybackService extends Service {
 
     public int getmLoopSong() {
         return mLoopSong;
+    }
+
+    public void setMindex(int mindex) {
+        this.mindex = mindex;
     }
 
     public void setmLoopSong(int mLoopSong) {
@@ -230,9 +236,10 @@ public class MediaPlaybackService extends Service {
             mMediaPlayer.pause();
         }
         try {
-            Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
+          //  Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPositionCurrent) {
+                    mindex=i;
                     Log.d("mPath", mListAllSong.get(i).getFile());
                     Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
                     mMediaPlayer.setDataSource(getApplicationContext(), content_uri);
@@ -248,13 +255,13 @@ public class MediaPlaybackService extends Service {
                     mListenner.onItemListenner();
                     mConnectSeviceFragment2.onActionConnectSeviceFragment();
                     //==
-
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         ///SharedPreferences
+        Log.d("DurationSong",  getDurationSong()+"//");
         mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharePreferences.edit();
         editor.putInt("position", getmPosition());
@@ -292,13 +299,15 @@ public class MediaPlaybackService extends Service {
         mMediaPlayer.pause();
         if (getCurrentPositionSong() <= 3000) {
             if (mShuffleSong == true) {
-                mPositionCurrent = actionShuffleSong();
+                mindex=actionShuffleSong();
+              //  mPositionCurrent = mListAllSong.get(mindex).getId();
             } else {
-                if (mPositionCurrent == 0) {
-                    mPositionCurrent = mListAllSong.size() - 1;
+                if (mindex == 0) {
+                    mindex=mListAllSong.size() - 1;
                 } else
-                    mPositionCurrent--;
+                    mindex--;
             }
+            mPositionCurrent = mListAllSong.get(mindex).getId();
             playSong(mPositionCurrent);
             mListenner.actionNotification();
         } else {
@@ -309,17 +318,17 @@ public class MediaPlaybackService extends Service {
     public void nextSong() {
         mMediaPlayer.pause();
         if (mShuffleSong == true) {
-            mPositionCurrent = actionShuffleSong();
+            mindex = actionShuffleSong();
         } else {
-            if (mPositionCurrent == mListAllSong.size() - 1)
-                mPositionCurrent = 0;
+            if (mindex == mListAllSong.size() - 1)
+                mindex = 0;
             else
-                mPositionCurrent++;
+                mindex++;
         }
+        mPositionCurrent= mListAllSong.get(mindex).getId();
         mListenner.onItemListenner();
         playSong(mPositionCurrent);
         mListenner.actionNotification();
-
     }
 
     public int actionShuffleSong() {
@@ -358,17 +367,18 @@ public class MediaPlaybackService extends Service {
     public void onCompletionSong() {
         mMediaPlayer.pause();
         if (mLoopSong == 0) {
-            if (mPositionCurrent < mListAllSong.size() - 1)
-                mPositionCurrent++;
+            if (mindex < mListAllSong.size() - 1)
+                mindex++;
         } else {
             if (mLoopSong == -1) {
-                if (mPositionCurrent == mListAllSong.size() - 1) {
-                    mPositionCurrent = 0;
+                if (mindex == mListAllSong.size() - 1) {
+                    mindex = 0;
                 } else {
-                    mPositionCurrent++;
+                    mindex++;
                 }
             }
         }
+        mPositionCurrent= mListAllSong.get(mindex).getId();
         playSong(mPositionCurrent);
         mListenner.actionNotification();
     }

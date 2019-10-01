@@ -54,7 +54,6 @@ public class FavoriteSongsProvider extends ContentProvider {
                             FAVORITE + " integer default 0, " + //  0 : not like // 1 : stop like // 2 : like
                             COUNT + " integer default 0  );"; // number click // if count =3 => is_favorite=1 expect  is_favorite=1
 
-
     private static HashMap<String, String> HASMAP;
     private static UriMatcher sUriMatcher;
     private static final int URI_ALL_ITEM_CODE = 1;

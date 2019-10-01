@@ -86,10 +86,10 @@ public class MediaPlaybackFragment extends Fragment   {
              //   if(getActivity().findViewById(R.id.frament2)!=null)
                // updateFragment.updateFragment("lop");
                 updateTime();
-
-               mSeekBar.setMax(mMusicService.getDurationSong());
+                mSeekBar.setMax(mMusicService.getDurationSong());
                 mNameSong.setText(mMusicService.getmNameSong() + "");
                 mArtist.setText(mMusicService.getmArtist());
+                Log.d("time finish","//"+mMusicService.getDuration());
                 mTimeFinish.setText(mMusicService.getDuration());
                 if (!mMusicService.getmPath().equals(""))
                     if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
@@ -119,12 +119,18 @@ public class MediaPlaybackFragment extends Fragment   {
                     } else
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
                 }
+            }else {
+             //   Log.
+                  mMusicService.playSong(mMusicService.getmPosition());
+                  mMusicService.pauseSong();
+              //    mSeekBar.setMax(mMusicService.getmMediaPlayer().getDuration());
+                   updateUI();
+
             }
         }
     }
 
     void initView(View view) {
-
         imgBackGround = view.findViewById(R.id.imgBackGround);
         mNameSong = view.findViewById(R.id.namesong);
         mArtist = view.findViewById(R.id.nameArtist);
@@ -142,20 +148,26 @@ public class MediaPlaybackFragment extends Fragment   {
         btRepeat = view.findViewById(R.id.repeat);
         btShuffle = view.findViewById(R.id.shuffle);
         mNameSong.setSelected(true);
-        if (getActivity().findViewById(R.id.frament2) != null)
+        if (getActivity().findViewById(R.id.frament2) != null) {
             btListMusic.setVisibility(View.GONE);
-
+            imgBackGround.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        }else {
+            imgBackGround.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        }
     }
 
     public void setmMusicService(final MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
-        updateUI();
+
         mMusicService.getListenner2(new MediaPlaybackService.ConnectSeviceFragmentInterface() {
             @Override
             public void onActionConnectSeviceFragment() {
                 updateUI();
             }
         });
+        updateUI();
+        Log.e("service","///"+mMusicService);
+      //  Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
     }
 
     @Nullable
@@ -163,6 +175,9 @@ public class MediaPlaybackFragment extends Fragment   {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
         initView(view);
+        if(getActivity().findViewById(R.id.frament2)!=null){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        }else
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -270,6 +285,7 @@ public class MediaPlaybackFragment extends Fragment   {
         updateUI();
         return view;
     }
+
 
     public void updateTime() {
         final Handler handler = new Handler();
