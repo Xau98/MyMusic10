@@ -54,6 +54,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         Log.e("song Favo",mListAllSong.size()+"//");
         ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
         Song song =null;
+        int dem=0;
         if (cursor.moveToFirst()) {
             do {
 
@@ -62,12 +63,14 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
                      if(mListAllSong.get(i).getId()== cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))){
                      Log.d("song F", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//"+mListAllSong.get(i).getId());
                         if( cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.FAVORITE)) == 2){
+
                            // Log.d("song F1", "//"+cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//");
-                            song = new Song( mListAllSong.get(i).getId(),
+                            song = new Song( dem,
                                     mListAllSong.get(i).getTitle(),
                                     mListAllSong.get(i).getFile(),
                                     mListAllSong.get(i).getArtist(),
                                     mListAllSong.get(i).getDuration());
+                            dem++;
                             mListFavoriteSongs.add(song);
                          }
                      }
@@ -78,6 +81,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
          mAdapter.updateList(mListFavoriteSongs);
          setSong(mListFavoriteSongs);
         mAdapter.setmTypeSong("FavoriteSong");
+        mAdapter.setmListFavoriteSongs(mListAllSong);
     }
 
     @Override

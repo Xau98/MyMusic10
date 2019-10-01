@@ -209,15 +209,11 @@ public class ActivityMusic extends AppCompatActivity
 
         if (id == R.id.nav_favorite) {
             Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
-            //if(mMusicService!=null){
             mFavoriteSongsFragment = new FavoriteSongsFragment((ArrayList<Song>) mMusicService.getmListAllSong());
-
-            // }
-
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
+
         } else if (id == R.id.nav_playlist) {
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
-
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

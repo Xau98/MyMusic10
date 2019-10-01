@@ -31,11 +31,12 @@ import java.util.regex.Pattern;
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> implements Filterable {
     private List<Song> mListSong = new ArrayList<>();
     private List<Song> mSong;
+    private ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context mContext;
     private OnClickItemView mClickItemView;
     private MediaPlaybackService mMusicService;
-    private String mTypeSong="";
+    private String mTypeSong = "";
 
     public MusicAdapter(OnClickItemView mClickItemView, Context context) {
         mInflater = LayoutInflater.from(context);
@@ -48,8 +49,9 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         this.mMusicService = mMusicService;
     }
 
-    public String getmTypeSong() {
-        return mTypeSong;
+    public void setmListFavoriteSongs(ArrayList<Song> mListFavoriteSongs) {
+        this.mListFavoriteSongs = mListFavoriteSongs;
+
     }
 
     public void setmTypeSong(String mTypeSong) {
@@ -68,7 +70,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         if (mSong != null) {
-            Song current = mSong.get(position);
+            final Song current = mSong.get(position);
             holder.mStt.setText(current.getId() + "");
             holder.mNameSong.setText(current.getTitle());
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
@@ -95,33 +97,41 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                     //    holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_while_24dp, 0, 0, 0);
                 }
             }
+
+
             holder.mMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     PopupMenu popupMenu = new PopupMenu(mContext, holder.mMore);
-                    if(mTypeSong.equals("AllSong")) {
+                    if (mTypeSong.equals("AllSong")) {
                         popupMenu.inflate(R.menu.add_song);
                     }
-                    if(mTypeSong.equals("FavoriteSong")) {
+                    if (mTypeSong.equals("FavoriteSong")) {
                         popupMenu.inflate(R.menu.remove_song);
                     }
 
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
-                            switch (menuItem.getItemId()){
+                            switch (menuItem.getItemId()) {
                                 case R.id.addFavorite:
                                     ContentValues values = new ContentValues();
-                                    values.put(FavoriteSongsProvider.FAVORITE,2);
-                                    mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
-                                    Toast.makeText(mContext,  "addFavorite song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                                    values.put(FavoriteSongsProvider.FAVORITE, 2);
+                                    mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + current.getId(), null);
+                                    Toast.makeText(mContext, "addFavorite song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
                                     return true;
                                 case R.id.removeFavorite:
                                     ContentValues values1 = new ContentValues();
-                                    values1.put(FavoriteSongsProvider.FAVORITE,1);
-                                    values1.put(FavoriteSongsProvider.COUNT,0);
-                                    mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values1,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
-                                    Toast.makeText(mContext,  "removeFavorite song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                                    values1.put(FavoriteSongsProvider.FAVORITE, 1);
+                                    values1.put(FavoriteSongsProvider.COUNT, 0);
+                                    for (int i = 0; i < mListFavoriteSongs.size(); i++) {
+                                        //     Log.d("name", mListFavoriteSongs.get(i).getTitle());
+                                        if (mListFavoriteSongs.get(i).getTitle().equals(current.getTitle())) {
+                                            mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + mListFavoriteSongs.get(i).getId(), null);
+                                            Log.d("name", mListFavoriteSongs.get(i).getTitle()+"//"+FavoriteSongsProvider.ID_PROVIDER+"///"+mListFavoriteSongs.get(i).getId());
+                                        }
+                                    }
+                                    Toast.makeText(mContext, "removeFavorite song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();// lôi
                                     return true;
                             }
                             return false;

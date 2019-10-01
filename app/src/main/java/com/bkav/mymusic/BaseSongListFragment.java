@@ -282,13 +282,13 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             do{
                Log.d("ID",c.getString(c.getColumnIndex("id_provider")));
                if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))!=1)
-               if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))<3){
+               if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))<2){
                    ContentValues values = new ContentValues();
                    values.put(FavoriteSongsProvider.COUNT,c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))+1);
                    getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+songs.getId(),null);
                    Log.d("ID",c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT))+"//"+c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
                }else {
-                   if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))==3) {
+                   if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))==2) {
                        ContentValues values = new ContentValues();
                        values.put(FavoriteSongsProvider.COUNT, 0);
                        values.put(FavoriteSongsProvider.FAVORITE, 2);
