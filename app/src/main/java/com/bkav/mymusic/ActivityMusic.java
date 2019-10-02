@@ -54,9 +54,9 @@ public class ActivityMusic extends AppCompatActivity
     private boolean mExitService = false;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
     private AllSongsFragment mAllSongsFragment = new AllSongsFragment();
-   // private FavoriteSongsFragment mFavoriteSongsFragment;
-    //    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
-    //    private SharedPreferences mSharePreferences;
+    private  BaseSongListFragment mBaseSongListFragment=new BaseSongListFragment();
+     // private FavoriteSongsFragment mFavoriteSongsFragment;
+
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -64,6 +64,7 @@ public class ActivityMusic extends AppCompatActivity
             mMusicService = binder.getMusicBinder();
             mMediaPlaybackFragment.setmMusicService(mMusicService);
             //mAllSongsFragment.setmMusicService(mMusicService);
+            mBaseSongListFragment.setmMusicService(mMusicService);
             mExitService = true;
         }
 
@@ -92,13 +93,9 @@ public class ActivityMusic extends AppCompatActivity
         //============================================
 
         if (findViewById(R.id.frament2) != null) {
-//         Toast.makeText(this, "fragment 1,2", Toast.LENGTH_SHORT).show();
-            Log.d("search", "onCreate: frament1");
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
             getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
         } else if (findViewById(R.id.framentContent) != null) {
-            Log.d("search", "onCreate: framentContent");
-//         Toast.makeText(this, "fragment content", Toast.LENGTH_SHORT).show();
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
 
         }

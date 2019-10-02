@@ -124,13 +124,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                                     ContentValues values1 = new ContentValues();
                                     values1.put(FavoriteSongsProvider.FAVORITE, 1);
                                     values1.put(FavoriteSongsProvider.COUNT, 0);
-//                                    for (int i = 0; i < mListFavoriteSongs.size(); i++) {
-//                                        //     Log.d("name", mListFavoriteSongs.get(i).getTitle());
-//                                        if (mListFavoriteSongs.get(i).getTitle().equals(current.getTitle())) {
-                                            mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + current.getId(), null);
-                                          //  Log.d("name", mListFavoriteSongs.get(i).getTitle()+"//"+FavoriteSongsProvider.ID_PROVIDER+"///"+mListFavoriteSongs.get(i).getId());
-                                      //  }
-                                 //   }
+                                    mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + current.getId(), null);
+
                                     Toast.makeText(mContext, "removeFavorite song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();// lôi
                                     return true;
                             }
@@ -141,8 +136,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
                 }
             });
-
-
         } else {
             holder.mNameSong.setText("No Song");
         }
@@ -226,6 +219,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     }
 
     interface OnClickItemView {
-        void clickItem(Song song , int index);
+        void clickItem(Song song, int index);
     }
 }

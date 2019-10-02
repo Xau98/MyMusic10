@@ -53,6 +53,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
         getLoaderManager().initLoader(LOADER_ID, null, this);
 //        Log.d("search", Log.getStackTraceString(new Exception()));
      //   Log.d("all song", "all song");
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

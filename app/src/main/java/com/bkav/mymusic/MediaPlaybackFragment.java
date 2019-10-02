@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
@@ -34,7 +35,7 @@ import java.text.SimpleDateFormat;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class MediaPlaybackFragment extends Fragment   {
+public class MediaPlaybackFragment extends Fragment {
 
     private MediaPlaybackService mMusicService;
     private boolean mExitService = false;
@@ -45,6 +46,8 @@ public class MediaPlaybackFragment extends Fragment   {
     private ImageView mdisk;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private SharedPreferences mSharePreferences;
+    private  String mURL = "content://com.bkav.provider";
+    private Uri mURISong= Uri.parse(mURL);
 
 //    public ServiceConnection mServiceConnection = new ServiceConnection() {
 //        @Override
@@ -81,15 +84,14 @@ public class MediaPlaybackFragment extends Fragment   {
 //    }
 
     public void updateUI() {
-        if (mMusicService != null&& mSeekBar!=null) {
+        if (mMusicService != null && mSeekBar != null) {
             if (mMusicService.isMusicPlay()) {
-             //   if(getActivity().findViewById(R.id.frament2)!=null)
-               // updateFragment.updateFragment("lop");
+                //   if(getActivity().findViewById(R.id.frament2)!=null)
+                // updateFragment.updateFragment("lop");
                 updateTime();
                 mSeekBar.setMax(mMusicService.getDurationSong());
                 mNameSong.setText(mMusicService.getmNameSong() + "");
                 mArtist.setText(mMusicService.getmArtist());
-                Log.d("time finish","//"+mMusicService.getDuration());
                 mTimeFinish.setText(mMusicService.getDuration());
                 if (!mMusicService.getmPath().equals(""))
                     if (mMusicService.imageArtist(mMusicService.getmPath()) != null) {
@@ -119,15 +121,34 @@ public class MediaPlaybackFragment extends Fragment   {
                     } else
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
                 }
-            }else {
-             //   Log.
-                  mMusicService.playSong(mMusicService.getmPosition());
-                  mMusicService.pauseSong();
-              //    mSeekBar.setMax(mMusicService.getmMediaPlayer().getDuration());
-                   updateUI();
+                //===== buttton like/ 0: not like , not dislike // 1: dislike , not like /// 2: like , not dislike
+                String selection=" id_provider ="+mMusicService.getmPosition();
+                Cursor c = getActivity().managedQuery(mURISong, null, selection, null, null);
+                if(c.moveToFirst()){
+                    do{
+                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==0){
+                            btLike.setImageResource(R.drawable.ic_like);
+                            btDislike.setImageResource(R.drawable.ic_dislike);
+                        }
+                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==1){
+                            btLike.setImageResource(R.drawable.ic_like);
+                            btDislike.setImageResource(R.drawable.ic_thumb_down_black_24dp);
+                        }
+                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==2){
+                            btLike.setImageResource(R.drawable.ic_thumb_up_black_24dp);
+                            btDislike.setImageResource(R.drawable.ic_dislike);
+                        }
+                    }while(c.moveToNext());
+                }
+            } else {
+                mMusicService.setmPosition(mMusicService.getmPosition());
+                mMusicService.playSong(mMusicService.getmPosition());
+                mMusicService.pauseSong();
+                updateUI();
 
             }
-        }
+
+      }
     }
 
     void initView(View view) {
@@ -151,7 +172,7 @@ public class MediaPlaybackFragment extends Fragment   {
         if (getActivity().findViewById(R.id.frament2) != null) {
             btListMusic.setVisibility(View.GONE);
             imgBackGround.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        }else {
+        } else {
             imgBackGround.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
     }
@@ -166,8 +187,8 @@ public class MediaPlaybackFragment extends Fragment   {
             }
         });
         updateUI();
-        Log.e("service","///"+mMusicService);
-      //  Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
+        Log.e("service", "///" + mMusicService);
+        //  Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
     }
 
     @Nullable
@@ -175,10 +196,10 @@ public class MediaPlaybackFragment extends Fragment   {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
         initView(view);
-        if(getActivity().findViewById(R.id.frament2)!=null){
+        if (getActivity().findViewById(R.id.frament2) != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        }else
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        } else
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -267,19 +288,22 @@ public class MediaPlaybackFragment extends Fragment   {
         btLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              ContentValues values = new ContentValues();
-              values.put(FavoriteSongsProvider.FAVORITE,2);
-              getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
-              Toast.makeText(getContext(),  "like song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+
+                ContentValues values = new ContentValues();
+                values.put(FavoriteSongsProvider.FAVORITE, 2);
+                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mMusicService.getmPosition(), null);
+                 Toast.makeText(getContext(), "like song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                updateUI();
             }
         });
         btDislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContentValues values = new ContentValues();
-                values.put(FavoriteSongsProvider.FAVORITE,1);
-                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+mMusicService.getmPosition(),null);
-                Toast.makeText(getContext(),  "dislike song //"+mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                values.put(FavoriteSongsProvider.FAVORITE, 1);
+                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mMusicService.getmPosition(), null);
+                Toast.makeText(getContext(), "dislike song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
+                updateUI();
             }
         });
         updateUI();

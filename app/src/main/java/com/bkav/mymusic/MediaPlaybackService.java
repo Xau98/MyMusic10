@@ -26,7 +26,11 @@ import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,17 +54,35 @@ public class MediaPlaybackService extends Service {
     private List<Song> mListAllSong = new ArrayList<>();
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private SharedPreferences mSharePreferences;
+    private  int mDuration;
     private  ConnectSeviceFragmentInterface mConnectSeviceFragment2;
     @Override
     public void onCreate() {
         super.onCreate();
-        mSharePreferences =   getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
-        mPositionCurrent = mSharePreferences.getInt("position", 3);
-        mNameSong=mSharePreferences.getString("nameSong", "Name Song");
-        mArtist=mSharePreferences.getString("nameArtist", "Name Artist");
-        mPath=mSharePreferences.getString("path", "");
 
-
+       mSharePreferences =   getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
+        mPositionCurrent = mSharePreferences.getInt("position1", 3);
+//        mNameSong=mSharePreferences.getString("nameSong", "Name Song");
+//        mArtist=mSharePreferences.getString("nameArtist", "Name Artist");
+//        mPath=mSharePreferences.getString("path", "");
+//        mDuration=mSharePreferences.getInt("duration", 0);
+        Gson gson=new Gson();
+        String json =mSharePreferences.getString("Songs", "");
+        if(!json.isEmpty()){
+            Type type =new TypeToken<ArrayList<Song>>(){
+            }.getType();
+           mListAllSong =gson.fromJson(json , type);
+            for(int i=0;i<mListAllSong.size()-1;i++){
+                if(mPositionCurrent==mListAllSong.get(i).getId()){
+                    mindex=i;
+                    mNameSong=mListAllSong.get(i).getTitle();
+                    mArtist = mListAllSong.get(i).getArtist();
+                    mPath  = mListAllSong.get(i).getFile();
+                    mDuration = mListAllSong.get(i).getDuration();
+                }
+                Log.e("mSharePreferences", mListAllSong.get(i).getTitle());
+            }
+        }
     }
 
     @Override
@@ -108,6 +130,10 @@ public class MediaPlaybackService extends Service {
 
     public String getmArtist() {
         return mArtist;
+    }
+
+    public int getmDuration() {
+        return mDuration;
     }
 
     public int getmLoopSong() {
@@ -231,12 +257,13 @@ public class MediaPlaybackService extends Service {
     }
 
     public void playSong(int mPositionCurrent) {
+        Log.d("mPath1","well come");
         mMediaPlayer = new MediaPlayer();
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
         }
         try {
-          //  Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
+            Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPositionCurrent) {
                     mindex=i;
@@ -254,6 +281,9 @@ public class MediaPlaybackService extends Service {
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
                     mListenner.onItemListenner();
                     mConnectSeviceFragment2.onActionConnectSeviceFragment();
+                    Log.e("DurationSong",  mDuration+"//");
+                    mDuration=mMediaPlayer.getDuration();
+                    Log.e("DurationSong2",  mDuration+"//");
                     //==
                 }
             }
@@ -261,15 +291,20 @@ public class MediaPlaybackService extends Service {
             e.printStackTrace();
         }
         ///SharedPreferences
-        Log.d("DurationSong",  getDurationSong()+"//");
+
         mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharePreferences.edit();
-        editor.putInt("position", getmPosition());
-        editor.putString("nameSong", getmNameSong());
-        editor.putString("nameArtist", getmArtist());
-        editor.putString("path", mPath);
-        editor.putInt("duration", getDurationSong());
+          editor.putInt("position1", getmPosition());
+//        editor.putString("nameSong", getmNameSong());
+//        editor.putString("nameArtist", getmArtist());
+//        editor.putString("path", mPath);
+//        editor.putInt("duration", getDurationSong());
+//        editor.commit();
+        Gson gson =new Gson();
+        String json =gson.toJson(mListAllSong);
+        editor.putString("Songs", json);
         editor.commit();
+
     }
 
     public void playingSong() {
@@ -309,7 +344,7 @@ public class MediaPlaybackService extends Service {
             }
             mPositionCurrent = mListAllSong.get(mindex).getId();
             playSong(mPositionCurrent);
-            mListenner.actionNotification();
+            //mListenner.actionNotification();
         } else {
             playSong(mPositionCurrent);
         }
@@ -328,7 +363,7 @@ public class MediaPlaybackService extends Service {
         mPositionCurrent= mListAllSong.get(mindex).getId();
         mListenner.onItemListenner();
         playSong(mPositionCurrent);
-        mListenner.actionNotification();
+       // mListenner.actionNotification();
     }
 
     public int actionShuffleSong() {
@@ -380,7 +415,7 @@ public class MediaPlaybackService extends Service {
         }
         mPositionCurrent= mListAllSong.get(mindex).getId();
         playSong(mPositionCurrent);
-        mListenner.actionNotification();
+       // mListenner.actionNotification();
     }
 
     public Bitmap imageArtist(String path) {
@@ -401,7 +436,7 @@ public class MediaPlaybackService extends Service {
 
     public interface Listenner {
         void onItemListenner();
-        void actionNotification();
+      //  void actionNotification();
 
     }
 
