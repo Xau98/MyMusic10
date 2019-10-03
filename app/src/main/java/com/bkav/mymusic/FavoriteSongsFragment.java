@@ -48,33 +48,28 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         return new CursorLoader(getContext(),uriSongs, null, null, null, null);
     }
 
-    public void setmListAllSong(ArrayList<Song> mListAllSong) {
-        this.mListAllSong = mListAllSong;
-
-    }
-
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         Log.e("song Favo",mListAllSong.size()+"//");
         ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
         Song song =null;
-        int dem=0;
         if (cursor.moveToFirst()) {
             do {
 
                 for(int i=0;i<mListAllSong.size();i++){
-                    //   Log.d("SONG size ","//"+mListAllSong.size());
+                     Log.d("SONG size ","//"+mListAllSong.size());
                      if(mListAllSong.get(i).getId()== cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))){
-                     Log.d("song F", cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//"+mListAllSong.get(i).getId());
                         if( cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.FAVORITE)) == 2){
-                           // Log.d("song F1", "//"+cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))+"//");
                             song = new Song( mListAllSong.get(i).getId(),
                                     mListAllSong.get(i).getTitle(),
                                     mListAllSong.get(i).getFile(),
                                     mListAllSong.get(i).getArtist(),
                                     mListAllSong.get(i).getDuration());
-                          //  dem++;
-                            mListFavoriteSongs.add(song);
+                            if(song !=null)
+                                 mListFavoriteSongs.add(song);
+                            else
+                                getActivity().getContentResolver().delete(FavoriteSongsProvider.CONTENT_URI,FavoriteSongsProvider.ID_PROVIDER +"= "+mListAllSong.get(i).getId(),null);
+
                          }
                      }
                 }

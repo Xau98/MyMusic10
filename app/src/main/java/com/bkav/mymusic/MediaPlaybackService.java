@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -49,38 +50,38 @@ public class MediaPlaybackService extends Service {
     private String mNameSong = "";
     private int mPositionCurrent = 0;
     private int mindex;
-    private int mLoopSong = 0;// mLoopSong =0 (ko lap)// mLoopSong=-1 (lap ds) //mLoopSong =1 (lap 1)
-    private boolean mShuffleSong = false;
+    private int mLoopSong;// mLoopSong =0 (ko lap)// mLoopSong=-1 (lap ds) //mLoopSong =1 (lap 1)
+    private boolean mShuffleSong;
     private List<Song> mListAllSong = new ArrayList<>();
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private SharedPreferences mSharePreferences;
-    private  int mDuration;
-    private  ConnectSeviceFragmentInterface mConnectSeviceFragment2;
+    private int mDuration;
+    private String mURL = "content://com.bkav.provider";
+    private Uri mURISong = Uri.parse(mURL);
+
+    private ConnectSeviceFragmentInterface mConnectSeviceFragment2;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-       mSharePreferences =   getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
-        mPositionCurrent = mSharePreferences.getInt("position1", 3);
-//        mNameSong=mSharePreferences.getString("nameSong", "Name Song");
-//        mArtist=mSharePreferences.getString("nameArtist", "Name Artist");
-//        mPath=mSharePreferences.getString("path", "");
-//        mDuration=mSharePreferences.getInt("duration", 0);
-        Gson gson=new Gson();
-        String json =mSharePreferences.getString("Songs", "");
-        if(!json.isEmpty()){
-            Type type =new TypeToken<ArrayList<Song>>(){
+        mSharePreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
+        mPositionCurrent = mSharePreferences.getInt("position", 0);
+        mLoopSong = mSharePreferences.getInt("mLoopSong", 0);
+        mShuffleSong = mSharePreferences.getBoolean("mShuffleSong", false);
+        Gson gson = new Gson();
+        String json = mSharePreferences.getString("Songs", "");
+        if (!json.isEmpty()) {
+            Type type = new TypeToken<ArrayList<Song>>() {
             }.getType();
-           mListAllSong =gson.fromJson(json , type);
-            for(int i=0;i<mListAllSong.size()-1;i++){
-                if(mPositionCurrent==mListAllSong.get(i).getId()){
-                    mindex=i;
-                    mNameSong=mListAllSong.get(i).getTitle();
+            mListAllSong = gson.fromJson(json, type);
+            for (int i = 0; i < mListAllSong.size() - 1; i++) {
+                if (mPositionCurrent == mListAllSong.get(i).getId()) {
+                    mindex = i;
+                    mNameSong = mListAllSong.get(i).getTitle();
                     mArtist = mListAllSong.get(i).getArtist();
-                    mPath  = mListAllSong.get(i).getFile();
+                    mPath = mListAllSong.get(i).getFile();
                     mDuration = mListAllSong.get(i).getDuration();
                 }
-                Log.e("mSharePreferences", mListAllSong.get(i).getTitle());
             }
         }
     }
@@ -113,7 +114,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void getListenner2(ConnectSeviceFragmentInterface listenner2) {
-        this.mConnectSeviceFragment2 =listenner2;
+        this.mConnectSeviceFragment2 = listenner2;
     }
 
     public String getmNameSong() {
@@ -130,10 +131,6 @@ public class MediaPlaybackService extends Service {
 
     public String getmArtist() {
         return mArtist;
-    }
-
-    public int getmDuration() {
-        return mDuration;
     }
 
     public int getmLoopSong() {
@@ -257,7 +254,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void playSong(int mPositionCurrent) {
-        Log.d("mPath1","well come");
+        Log.d("mPath1", "well come");
         mMediaPlayer = new MediaPlayer();
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
@@ -266,7 +263,7 @@ public class MediaPlaybackService extends Service {
             Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPositionCurrent) {
-                    mindex=i;
+                    mindex = i;
                     Log.d("mPath", mListAllSong.get(i).getFile());
                     Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
                     mMediaPlayer.setDataSource(getApplicationContext(), content_uri);
@@ -278,13 +275,10 @@ public class MediaPlaybackService extends Service {
                     mPath = mListAllSong.get(i).getFile();
                     mNameSong = mListAllSong.get(i).getTitle();
                     mArtist = mListAllSong.get(i).getArtist();
+                    mDuration = mMediaPlayer.getDuration();
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
                     mListenner.onItemListenner();
                     mConnectSeviceFragment2.onActionConnectSeviceFragment();
-                    Log.e("DurationSong",  mDuration+"//");
-                    mDuration=mMediaPlayer.getDuration();
-                    Log.e("DurationSong2",  mDuration+"//");
-                    //==
                 }
             }
         } catch (IOException e) {
@@ -294,17 +288,28 @@ public class MediaPlaybackService extends Service {
 
         mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharePreferences.edit();
-          editor.putInt("position1", getmPosition());
-//        editor.putString("nameSong", getmNameSong());
-//        editor.putString("nameArtist", getmArtist());
+        editor.putInt("position", getmPosition());
+        editor.putInt("mLoopSong", mLoopSong);
+        editor.putBoolean("mShuffleSong", mShuffleSong);
 //        editor.putString("path", mPath);
 //        editor.putInt("duration", getDurationSong());
 //        editor.commit();
-        Gson gson =new Gson();
-        String json =gson.toJson(mListAllSong);
+        Gson gson = new Gson();
+        String json = gson.toJson(mListAllSong);
         editor.putString("Songs", json);
         editor.commit();
 
+    }
+
+    public int actionLike() {
+        String selection = " id_provider =" + mPositionCurrent;
+        Cursor c1 = getContentResolver().query(mURISong, null, selection, null, null);
+        if (c1.moveToFirst() && c1 != null) {
+            do {
+                return c1.getInt(c1.getColumnIndex(FavoriteSongsProvider.FAVORITE));
+            } while (c1.moveToNext());
+        }
+        return 0;
     }
 
     public void playingSong() {
@@ -334,17 +339,17 @@ public class MediaPlaybackService extends Service {
         mMediaPlayer.pause();
         if (getCurrentPositionSong() <= 3000) {
             if (mShuffleSong == true) {
-                mindex=actionShuffleSong();
-              //  mPositionCurrent = mListAllSong.get(mindex).getId();
+                mindex = actionShuffleSong();
+                //  mPositionCurrent = mListAllSong.get(mindex).getId();
             } else {
                 if (mindex == 0) {
-                    mindex=mListAllSong.size() - 1;
+                    mindex = mListAllSong.size() - 1;
                 } else
                     mindex--;
             }
             mPositionCurrent = mListAllSong.get(mindex).getId();
             playSong(mPositionCurrent);
-            //mListenner.actionNotification();
+            // mListenner.actionNotification();
         } else {
             playSong(mPositionCurrent);
         }
@@ -360,10 +365,9 @@ public class MediaPlaybackService extends Service {
             else
                 mindex++;
         }
-        mPositionCurrent= mListAllSong.get(mindex).getId();
-        mListenner.onItemListenner();
+        mPositionCurrent = mListAllSong.get(mindex).getId();
         playSong(mPositionCurrent);
-       // mListenner.actionNotification();
+        //  mListenner.actionNotification();
     }
 
     public int actionShuffleSong() {
@@ -388,10 +392,10 @@ public class MediaPlaybackService extends Service {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer media) {
-                      onCompletionSong();
+                        onCompletionSong();
                     }
                 });
                 handler.postDelayed(this, 500);
@@ -413,9 +417,9 @@ public class MediaPlaybackService extends Service {
                 }
             }
         }
-        mPositionCurrent= mListAllSong.get(mindex).getId();
+        mPositionCurrent = mListAllSong.get(mindex).getId();
         playSong(mPositionCurrent);
-       // mListenner.actionNotification();
+        //  mListenner.actionNotification();
     }
 
     public Bitmap imageArtist(String path) {
@@ -436,12 +440,11 @@ public class MediaPlaybackService extends Service {
 
     public interface Listenner {
         void onItemListenner();
-      //  void actionNotification();
-
+        // void actionNotification();
     }
 
-    public interface  ConnectSeviceFragmentInterface{
-        void  onActionConnectSeviceFragment();
+    public interface ConnectSeviceFragmentInterface {
+        void onActionConnectSeviceFragment();
     }
 
     class MusicBinder extends Binder {

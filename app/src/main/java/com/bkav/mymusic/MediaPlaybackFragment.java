@@ -121,25 +121,42 @@ public class MediaPlaybackFragment extends Fragment {
                     } else
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
                 }
-                //===== buttton like/ 0: not like , not dislike // 1: dislike , not like /// 2: like , not dislike
-                String selection=" id_provider ="+mMusicService.getmPosition();
-                Cursor c = getActivity().managedQuery(mURISong, null, selection, null, null);
-                if(c.moveToFirst()){
-                    do{
-                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==0){
+
+                Log.e("loi", "fix");
+                if(mMusicService.actionLike()==0){
                             btLike.setImageResource(R.drawable.ic_like);
                             btDislike.setImageResource(R.drawable.ic_dislike);
                         }
-                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==1){
+                        if(mMusicService.actionLike()==1){
                             btLike.setImageResource(R.drawable.ic_like);
                             btDislike.setImageResource(R.drawable.ic_thumb_down_black_24dp);
                         }
-                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==2){
+                        if(mMusicService.actionLike()==2){
                             btLike.setImageResource(R.drawable.ic_thumb_up_black_24dp);
                             btDislike.setImageResource(R.drawable.ic_dislike);
                         }
-                    }while(c.moveToNext());
-                }
+                //===== buttton like/ 0: not like , not dislike // 1: dislike , not like /// 2: like , not dislike
+//                String selection=" id_provider ="+mMusicService.getmPosition();
+//                Log.d("ok","loi"+selection);
+//                Cursor c = getActivity().getContentResolver().query(mURISong, null, selection, null, null);
+//                Log.d("ok","loi"+selection+"=="+c);
+//                if(c.moveToFirst()&& c!=null){
+//                    do{
+//                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==0){
+//                            btLike.setImageResource(R.drawable.ic_like);
+//                            btDislike.setImageResource(R.drawable.ic_dislike);
+//                        }
+//                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==1){
+//                            btLike.setImageResource(R.drawable.ic_like);
+//                            btDislike.setImageResource(R.drawable.ic_thumb_down_black_24dp);
+//                        }
+//                        if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))==2){
+//                            btLike.setImageResource(R.drawable.ic_thumb_up_black_24dp);
+//                            btDislike.setImageResource(R.drawable.ic_dislike);
+//                        }
+//                    }while(c.moveToNext());
+//                }
+
             } else {
                 mMusicService.setmPosition(mMusicService.getmPosition());
                 mMusicService.playSong(mMusicService.getmPosition());
@@ -186,8 +203,7 @@ public class MediaPlaybackFragment extends Fragment {
                 updateUI();
             }
         });
-        updateUI();
-        Log.e("service", "///" + mMusicService);
+       updateUI();
         //  Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
     }
 
@@ -228,7 +244,6 @@ public class MediaPlaybackFragment extends Fragment {
         btRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("loop", mMusicService.getmLoopSong() + "");
                 if (mMusicService.getmLoopSong() == 0) {
                     mMusicService.setmLoopSong(-1);
                     btRepeat.setBackgroundResource(R.drawable.ic_repeat_yellow_24dp);
@@ -241,6 +256,10 @@ public class MediaPlaybackFragment extends Fragment {
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
                     }
                 }
+                mSharePreferences =  getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = mSharePreferences.edit();
+                editor.putInt("mLoopSong", mMusicService.getmLoopSong());
+                editor.commit();
             }
         });
 
@@ -254,6 +273,10 @@ public class MediaPlaybackFragment extends Fragment {
                     mMusicService.setmShuffleSong(true);
                     btShuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow_24dp);
                 }
+                mSharePreferences =  getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = mSharePreferences.edit();
+                editor.putBoolean("mShuffleSong",mMusicService.ismShuffleSong());
+                editor.commit();
             }
         });
 
@@ -288,19 +311,25 @@ public class MediaPlaybackFragment extends Fragment {
         btLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 ContentValues values = new ContentValues();
+                if(mMusicService.actionLike()==0)
                 values.put(FavoriteSongsProvider.FAVORITE, 2);
+                if(mMusicService.actionLike()==2)
+                    values.put(FavoriteSongsProvider.FAVORITE, 0);
                 getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mMusicService.getmPosition(), null);
                  Toast.makeText(getContext(), "like song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
                 updateUI();
             }
         });
+
         btDislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContentValues values = new ContentValues();
-                values.put(FavoriteSongsProvider.FAVORITE, 1);
+                if(mMusicService.actionLike()==0)
+                    values.put(FavoriteSongsProvider.FAVORITE, 1);
+                if(mMusicService.actionLike()==1)
+                    values.put(FavoriteSongsProvider.FAVORITE, 0);
                 getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mMusicService.getmPosition(), null);
                 Toast.makeText(getContext(), "dislike song //" + mMusicService.getmNameSong(), Toast.LENGTH_SHORT).show();
                 updateUI();
@@ -309,7 +338,6 @@ public class MediaPlaybackFragment extends Fragment {
         updateUI();
         return view;
     }
-
 
     public void updateTime() {
         final Handler handler = new Handler();
@@ -326,7 +354,6 @@ public class MediaPlaybackFragment extends Fragment {
                         updateUI();
                     }
                 });
-
                 handler.postDelayed(this, 500);
             }
         }, 100);

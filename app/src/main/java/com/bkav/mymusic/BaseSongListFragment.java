@@ -60,7 +60,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private SharedPreferences mSharePreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private boolean mExitService = false;
-    private List<Song> mListSongs = new ArrayList<>();
     private  ArrayList <Song>  mListAllSong= new ArrayList<>();
     private int position = 0;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
@@ -72,7 +71,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
             mAdapter.setmMusicService(mMusicService);
-            mMusicService.setmListAllSong(mListAllSong);
+            //mMusicService.setmListAllSong(mListAllSong);
             updateUI();
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
                 @Override
@@ -105,7 +104,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 //    }
 
     public void setSong(List<Song> songs) {
-        this.mListSongs = songs;
+        this.mListAllSong =(ArrayList<Song>) songs;
         mAdapter.setSong(songs);
         if (mExitService == true) {
             updateUI();
@@ -170,19 +169,10 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         setHasOptionsMenu(true);
         mSharePreferences = this.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
-       position = mSharePreferences.getInt("position1", 0);
-//        mNameSong.setText(mSharePreferences.getString("nameSong", "Name Song"));
-//        mArtist.setText(mSharePreferences.getString("nameArtist", "Name Artist"));
-//        Log.d("create_db",mSharePreferences.getBoolean("create_db", false)+"//ok");
-//        if (!mSharePreferences.getString("path", "").equals(""))
-//            if (imageArtist(mSharePreferences.getString("path", "")) != null) {
-//                mdisk.setImageBitmap(imageArtist(mSharePreferences.getString("path", "")));
-//            } else
-//                mdisk.setImageResource(R.drawable.default_cover_art);
-//
-//        if (mSharePreferences.getString("nameSong", "").equals(""))
-//            constraintLayout.setVisibility(View.GONE);
-// ArrayList <Song>  mListAllSong= new ArrayList<>();
+       position = mSharePreferences.getInt("position", 0);
+       // mMusicService.setmLoopSong(mSharePreferences.getInt("mLoopSong", 0));
+       // mMusicService.setmShuffleSong(mSharePreferences.getBoolean("mShuffleSong", false));
+       Log.d("mLoopSong",mSharePreferences.getBoolean("mShuffleSong", false)+"//"+mSharePreferences.getInt("mLoopSong", 0));
         Gson gson=new Gson();
         String json =mSharePreferences.getString("Songs", "");
         if(!json.isEmpty()){
@@ -191,7 +181,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mListAllSong =gson.fromJson(json , type);
             for(int i=0;i<mListAllSong.size()-1;i++){
                 if(position==mListAllSong.get(i).getId()){
-                   // mindex=i;
                     mNameSong.setText(mListAllSong.get(i).getTitle());
                     mArtist.setText(mListAllSong.get(i).getArtist());
                   //  mPath  = mListAllSong.get(i).getFile();
@@ -246,6 +235,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
     public void updateUI() {
         if (mMusicService.isMusicPlay()) {
+            Log.d("notification","ok"+mMusicService.getmNameSong());
             mRecyclerView.scrollToPosition(mMusicService.getmPosition());
             mMusicService.UpdateTime();
             if (mMusicService.isPlaying()) {
@@ -294,13 +284,13 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     @Override
     public void clickItem(Song songs , int position) {
         mMusicService.setmPosition(songs.getId());
+        Log.d("size",mListAllSong.size()+"//");
         mMusicService.setmListAllSong(mListAllSong);
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
         }
         mMusicService.setMindex(position);
         mMusicService.playSong(songs.getId());
-        updateUI();
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         ///===========///
@@ -326,9 +316,10 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                }
 
             }while(c.moveToNext());
+
         }
         Log.d("click :", songs.getTitle() + "//" + songs.getId());
-
+        updateUI();
     }
 
 }

@@ -20,7 +20,7 @@
             android:src="@drawable/icon_disk2" />
 
         <LinearLayout
-            android:layout_width="249dp"
+            android:layout_width="285dp"
             android:layout_height="138dp"
             android:orientation="vertical"
             android:padding="10dp">
@@ -49,11 +49,12 @@
                 android:layout_marginBottom="10dp"
                 android:text="Mussic"
                 android:textSize="12dp" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#212121"
-                />
+                android:background="#ebedf0" />
+
             <LinearLayout
                 android:layout_width="212dp"
                 android:layout_height="59dp"

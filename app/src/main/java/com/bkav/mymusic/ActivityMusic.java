@@ -64,7 +64,7 @@ public class ActivityMusic extends AppCompatActivity
             mMusicService = binder.getMusicBinder();
             mMediaPlaybackFragment.setmMusicService(mMusicService);
             //mAllSongsFragment.setmMusicService(mMusicService);
-            mBaseSongListFragment.setmMusicService(mMusicService);
+          //  mBaseSongListFragment.setmMusicService(mMusicService);
             mExitService = true;
         }
 

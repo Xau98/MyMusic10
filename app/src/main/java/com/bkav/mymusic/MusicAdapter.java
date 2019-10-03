@@ -38,6 +38,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     private MediaPlaybackService mMusicService;
     private String mTypeSong = "";
 
+
     public MusicAdapter(OnClickItemView mClickItemView, Context context) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
@@ -68,10 +69,9 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-
         if (mSong != null) {
             final Song current = mSong.get(position);
-            holder.mStt.setText(current.getId() + "");
+            holder.mStt.setText(position+1 + "");
             holder.mNameSong.setText(current.getTitle());
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
             holder.mHours.setText(formmatTime.format(current.getDuration()));
@@ -85,12 +85,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             });
 
             if (mMusicService != null) {
-                mMusicService.setmListAllSong(mSong);
+              //  mMusicService.setmListAllSong(mSong);
                 if (mMusicService.getmNameSong().equals(mSong.get(position).getTitle())) {
                     holder.mStt.setText("");
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-                    //holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
                     holder.mStt.setBackgroundResource(R.drawable.ic_equalizer_black_24dp);
+                    //holder.mStt.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_equalizer_black_24dp, 0, 0, 0);
+
                 } else {
                     holder.mNameSong.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
                     holder.mStt.setBackgroundResource(R.drawable.ic_equalizer_while_24dp);
