@@ -2,60 +2,47 @@ package com.bkav.mymusic;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
-import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.os.Bundle; ;
 
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-
-import android.view.Menu;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class ActivityMusic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private MediaPlaybackService mMusicService;
-    private boolean mExitService = false;
+    MediaPlaybackService mMusicService;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
     private AllSongsFragment mAllSongsFragment = new AllSongsFragment();
-    private  BaseSongListFragment mBaseSongListFragment=new BaseSongListFragment();
-     // private FavoriteSongsFragment mFavoriteSongsFragment;
+    private IConnectActivityAndBaseSong iConnectActivityAndBaseSong;
+    private  boolean mStatus=false;
+    private SharedPreferences mSharePreferences;
+    private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
+    private  ArrayList<Song> mListAllSong =new ArrayList<>();
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -63,9 +50,32 @@ public class ActivityMusic extends AppCompatActivity
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) iBinder;
             mMusicService = binder.getMusicBinder();
             mMediaPlaybackFragment.setmMusicService(mMusicService);
-            //mAllSongsFragment.setmMusicService(mMusicService);
-          //  mBaseSongListFragment.setmMusicService(mMusicService);
-            mExitService = true;
+            iConnectActivityAndBaseSong.connectActivityAndBaseSong();
+
+            if(mStatus==false) {
+                if (findViewById(R.id.frament2) != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
+                } else if (findViewById(R.id.framentContent) != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+                }
+            }else {
+                mSharePreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+                Gson gson=new Gson();
+                String json =mSharePreferences.getString("Songs", "");
+                if(!json.isEmpty()){
+                    Type type =new TypeToken<ArrayList<Song>>(){
+                    }.getType();
+                    mListAllSong =gson.fromJson(json , type);
+                }
+                FavoriteSongsFragment mFavoriteSongsFragment=new FavoriteSongsFragment(mListAllSong);
+                if (findViewById(R.id.frament2) != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
+                } else if (findViewById(R.id.framentContent) != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
+                }
+            }
         }
 
         @Override
@@ -73,6 +83,10 @@ public class ActivityMusic extends AppCompatActivity
             Toast.makeText(mMusicService, "dis", Toast.LENGTH_SHORT).show();
         }
     };
+
+    public void setiConnectActivityAndBaseSong(IConnectActivityAndBaseSong iConnectActivityAndBaseSong) {
+        this.iConnectActivityAndBaseSong = iConnectActivityAndBaseSong;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,15 +105,27 @@ public class ActivityMusic extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         //============================================
-
-        if (findViewById(R.id.frament2) != null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
-        } else if (findViewById(R.id.framentContent) != null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
-
+        if(savedInstanceState!=null){
+            mStatus  =savedInstanceState.getBoolean("Status");
         }
+        Log.d("Status", mStatus+"//");
+         if(mStatus==false) {
+             if (findViewById(R.id.frament2) != null) {
+                 getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+                 getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
+             } else if (findViewById(R.id.framentContent) != null) {
+                 getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
+             }
+         }else {
 
+             FavoriteSongsFragment mFavoriteSongsFragment=new FavoriteSongsFragment( );
+             if (findViewById(R.id.frament2) != null) {
+                 getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
+                 getSupportFragmentManager().beginTransaction().replace(R.id.frament2, mMediaPlaybackFragment).commit();
+             } else if (findViewById(R.id.framentContent) != null) {
+                 getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
+             }
+         }
     }
 
     @Override
@@ -113,7 +139,8 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
-//    @Override
+
+    //    @Override
 //    public void onConfigurationChanged(@NonNull Configuration newConfig) {
 //        super.onConfigurationChanged(newConfig);
 //        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
@@ -198,6 +225,13 @@ public class ActivityMusic extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("Status",mStatus);
+    }
+
+    //
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -206,28 +240,22 @@ public class ActivityMusic extends AppCompatActivity
 
         if (id == R.id.nav_favorite) {
             Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
-
+            mStatus=true;
             FavoriteSongsFragment mFavoriteSongsFragment = new FavoriteSongsFragment((ArrayList<Song>) mMusicService.getmListAllSong());
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mFavoriteSongsFragment).commit();
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
 
         } else if (id == R.id.nav_playlist) {
+            mStatus=false;
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         }
-
         return true;
     }
 
-
-//    @Override
-//        public void updateFragment() {
-//            if(findViewById(R.id.frament1)!=null&& findViewById(R.id.frament2)!=null) {
-//                //    mAllSongsFragment.updateUI();
-//                //  if(findViewById(R.id.framentContent)!=null)
-//                // mMediaPlaybackFragment.updateUI();
-//            }
-//    }
+    interface IConnectActivityAndBaseSong {
+        void connectActivityAndBaseSong();
+    }
 }

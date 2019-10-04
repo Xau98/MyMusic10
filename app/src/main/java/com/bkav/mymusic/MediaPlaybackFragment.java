@@ -86,7 +86,8 @@ public class MediaPlaybackFragment extends Fragment {
     public void updateUI() {
         if (mMusicService != null && mSeekBar != null) {
             if (mMusicService.isMusicPlay()) {
-                //   if(getActivity().findViewById(R.id.frament2)!=null)
+                Log.d("servu", "onItemListenner: "+mMusicService);
+                //  if(getActivity().findViewById(R.id.frament2)!=null)
                 // updateFragment.updateFragment("lop");
                 updateTime();
                 mSeekBar.setMax(mMusicService.getDurationSong());
@@ -196,7 +197,6 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void setmMusicService(final MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
-
         mMusicService.getListenner2(new MediaPlaybackService.ConnectSeviceFragmentInterface() {
             @Override
             public void onActionConnectSeviceFragment() {
@@ -312,7 +312,7 @@ public class MediaPlaybackFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ContentValues values = new ContentValues();
-                if(mMusicService.actionLike()==0)
+                if(mMusicService.actionLike()==0||mMusicService.actionLike()==1)
                 values.put(FavoriteSongsProvider.FAVORITE, 2);
                 if(mMusicService.actionLike()==2)
                     values.put(FavoriteSongsProvider.FAVORITE, 0);
@@ -326,7 +326,7 @@ public class MediaPlaybackFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ContentValues values = new ContentValues();
-                if(mMusicService.actionLike()==0)
+                if(mMusicService.actionLike()==0||mMusicService.actionLike()==2)
                     values.put(FavoriteSongsProvider.FAVORITE, 1);
                 if(mMusicService.actionLike()==1)
                     values.put(FavoriteSongsProvider.FAVORITE, 0);
@@ -335,7 +335,7 @@ public class MediaPlaybackFragment extends Fragment {
                 updateUI();
             }
         });
-        updateUI();
+       updateUI();
         return view;
     }
 

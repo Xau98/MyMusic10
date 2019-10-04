@@ -49,10 +49,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       // Toast.makeText(getContext(), "//" + mMusicService, Toast.LENGTH_SHORT).show();
         getLoaderManager().initLoader(LOADER_ID, null, this);
-//        Log.d("search", Log.getStackTraceString(new Exception()));
-     //   Log.d("all song", "all song");
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }

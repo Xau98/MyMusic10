@@ -103,6 +103,7 @@ public class MediaPlaybackService extends Service {
                     } else {
                         playingSong();
                     }
+                    mConnectSeviceFragment2.onActionConnectSeviceFragment();
                     break;
             }
         }
@@ -254,6 +255,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void playSong(int mPositionCurrent) {
+        this.mPositionCurrent= mPositionCurrent;
         Log.d("mPath1", "well come");
         mMediaPlayer = new MediaPlayer();
         if (mMediaPlayer.isPlaying()) {
@@ -277,6 +279,7 @@ public class MediaPlaybackService extends Service {
                     mArtist = mListAllSong.get(i).getArtist();
                     mDuration = mMediaPlayer.getDuration();
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
+                    if(mListenner!=null)
                     mListenner.onItemListenner();
                     mConnectSeviceFragment2.onActionConnectSeviceFragment();
                 }
@@ -432,6 +435,8 @@ public class MediaPlaybackService extends Service {
         }
         return null;
     }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {

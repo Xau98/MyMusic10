@@ -19,10 +19,9 @@ import java.util.ArrayList;
 
 public class FavoriteSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
-    private ArrayList<Song> mListAllSong ;
+    private ArrayList<Song> mListAllSong =new ArrayList<>();
 
     public FavoriteSongsFragment(ArrayList<Song> mListAllSong) {
-        this.mListAllSong =new ArrayList<>();
         this.mListAllSong = mListAllSong;
         Log.e("song Favo",mListAllSong.size()+"//");
     }
@@ -37,6 +36,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         Toast.makeText(getContext(), "F//"+mMusicService, Toast.LENGTH_SHORT).show();
         getLoaderManager().initLoader(LOADER_ID, null, this);
 //        Log.d("search", Log.getStackTraceString(new Exception()));
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
