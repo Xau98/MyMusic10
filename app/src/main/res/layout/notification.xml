@@ -64,7 +64,7 @@
                 android:paddingTop="5dp">
 
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/btnPrevious"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -72,7 +72,7 @@
                     android:src="@drawable/ic_previous_black_24dp" />
 
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/btnPlay"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -80,7 +80,7 @@
                     android:background="#ffffff"
                     android:src="@drawable/ic_play_arrow_black_24dp" />
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/btnNext"
                     android:layout_width="50dp"
                     android:layout_height="50dp"

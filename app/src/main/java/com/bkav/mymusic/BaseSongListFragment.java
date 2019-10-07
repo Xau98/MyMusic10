@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -210,7 +212,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         if (mMusicService.isMusicPlay()) {
             Log.d("notification", "ok" + mMusicService.getmNameSong() + "//" + mMusicService.isPlaying());
             mRecyclerView.scrollToPosition(mMusicService.getmPosition());
-            mMusicService.UpdateTime();
+             UpdateTime();
             if (mMusicService.isPlaying()) {
                 mClickPlay.setBackgroundResource(R.drawable.ic_pause);
             } else {
@@ -229,6 +231,23 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         }
         if (mAdapter != null)
             mAdapter.notifyDataSetChanged();
+    }
+
+    public void UpdateTime() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mMusicService.getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer media) {
+                        mMusicService.onCompletionSong();
+                        updateUI();
+                    }
+                });
+                handler.postDelayed(this, 500);
+            }
+        }, 100);
     }
 
     @Override
