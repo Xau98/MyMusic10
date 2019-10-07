@@ -50,11 +50,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         this.mMusicService = mMusicService;
     }
 
-//    public void setmListFavoriteSongs(ArrayList<Song> mListFavoriteSongs) {
-//        this.mListFavoriteSongs = mListFavoriteSongs;
-//
-//    }
-
     public void setmTypeSong(String mTypeSong) {
         this.mTypeSong = mTypeSong;
     }

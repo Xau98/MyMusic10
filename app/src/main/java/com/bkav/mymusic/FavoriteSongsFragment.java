@@ -23,7 +23,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
 
     public FavoriteSongsFragment(ArrayList<Song> mListAllSong) {
         this.mListAllSong = mListAllSong;
-        Log.e("song Favo",mListAllSong.size()+"//");
+       // Log.e("song Favo",mListAllSong.size()+"//");
     }
 
     public FavoriteSongsFragment(){
@@ -33,10 +33,8 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Toast.makeText(getContext(), "F//"+mMusicService, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getContext(), "F//"+mMusicService, Toast.LENGTH_SHORT).show();
         getLoaderManager().initLoader(LOADER_ID, null, this);
-//        Log.d("search", Log.getStackTraceString(new Exception()));
-
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -50,14 +48,13 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        Log.e("song Favo",mListAllSong.size()+"//");
+
         ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
         Song song =null;
         if (cursor.moveToFirst()) {
             do {
 
                 for(int i=0;i<mListAllSong.size();i++){
-                     Log.d("SONG size ","//"+mListAllSong.size());
                      if(mListAllSong.get(i).getId()== cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))){
                         if( cursor.getInt(cursor.getColumnIndex(FavoriteSongsProvider.FAVORITE)) == 2){
                             song = new Song( mListAllSong.get(i).getId(),
@@ -80,12 +77,6 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
          setSong(mListFavoriteSongs);
         mAdapter.setmTypeSong("FavoriteSong");
        // mAdapter.setmListFavoriteSongs(mListAllSong);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(getContext(), "destroy", Toast.LENGTH_SHORT).show();
     }
 
     @Override

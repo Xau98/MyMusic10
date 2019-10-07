@@ -1,21 +1,13 @@
 package com.bkav.mymusic;
 
 
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +25,6 @@ import androidx.fragment.app.Fragment;
 
 import java.text.SimpleDateFormat;
 
-import static android.content.Context.MODE_PRIVATE;
 
 public class MediaPlaybackFragment extends Fragment {
 
@@ -86,9 +77,7 @@ public class MediaPlaybackFragment extends Fragment {
     public void updateUI() {
         if (mMusicService != null && mSeekBar != null) {
             if (mMusicService.isMusicPlay()) {
-                Log.d("servu", "onItemListenner: "+mMusicService);
-                //  if(getActivity().findViewById(R.id.frament2)!=null)
-                // updateFragment.updateFragment("lop");
+               // Log.d("servu", "onItemListenner: "+mMusicService);
                 updateTime();
                 mSeekBar.setMax(mMusicService.getDurationSong());
                 mNameSong.setText(mMusicService.getmNameSong() + "");
@@ -123,7 +112,6 @@ public class MediaPlaybackFragment extends Fragment {
                         btRepeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow_24dp);
                 }
 
-                Log.e("loi", "fix");
                 if(mMusicService.actionLike()==0){
                             btLike.setImageResource(R.drawable.ic_like);
                             btDislike.setImageResource(R.drawable.ic_dislike);
@@ -204,7 +192,6 @@ public class MediaPlaybackFragment extends Fragment {
             }
         });
        updateUI();
-        //  Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
     }
 
     @Nullable

@@ -9,7 +9,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +20,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,7 +41,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class BaseSongListFragment extends Fragment implements MusicAdapter.OnClickItemView   {
+public class BaseSongListFragment extends Fragment implements MusicAdapter.OnClickItemView {
 
     private RecyclerView mRecyclerView;
     protected MusicAdapter mAdapter;
@@ -53,15 +53,15 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     private SharedPreferences mSharePreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private boolean mExitService = false;
-    private  ArrayList <Song>  mListAllSong= new ArrayList<>();
+    private ArrayList<Song> mListAllSong = new ArrayList<>();
     private int position = 0;
     private MediaPlaybackFragment mMediaPlaybackFragment = new MediaPlaybackFragment();
-    private  String mURL = "content://com.bkav.provider";
-    private Uri mURISong= Uri.parse(mURL);
+    private String mURL = "content://com.bkav.provider";
+    private Uri mURISong = Uri.parse(mURL);
 
 
     public void setSong(List<Song> songs) {
-        this.mListAllSong =(ArrayList<Song>) songs;
+        this.mListAllSong = (ArrayList<Song>) songs;
         mAdapter.setSong(songs);
         if (mExitService == true) {
             updateUI();
@@ -83,7 +83,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mNameSong = view.findViewById(R.id.namePlaySong);
         mNameSong.setSelected(true);
         constraintLayout = view.findViewById(R.id.constraintLayout);
-        if(getActivity().findViewById(R.id.frament2)!=null)
+        if (getActivity().findViewById(R.id.frament2) != null)
             constraintLayout.setVisibility(View.GONE);
         else
             constraintLayout.setVisibility(View.VISIBLE);
@@ -96,12 +96,11 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mAdapter = new MusicAdapter(this, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if(mMusicService!=null)
-        mRecyclerView.scrollToPosition(mMusicService.getmPosition());
+        if (mMusicService != null)
+            mRecyclerView.scrollToPosition(mMusicService.getmPosition());
     }
 
     public Bitmap imageArtist(String path) {
-        Log.d("path", path + "//");
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);
         byte[] data = mediaMetadataRetriever.getEmbeddedPicture();
@@ -119,22 +118,24 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         setHasOptionsMenu(true);
         mSharePreferences = this.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);// move Service
-       position = mSharePreferences.getInt("position", 0);
-        Gson gson=new Gson();
-        String json =mSharePreferences.getString("Songs", "");
-        if(!json.isEmpty()){
-            Type type =new TypeToken<ArrayList<Song>>(){
+        position = mSharePreferences.getInt("position", 0);
+        Gson gson = new Gson();
+
+        String json = mSharePreferences.getString("Songs", "");
+        if (!json.isEmpty()) {
+            Type type = new TypeToken<ArrayList<Song>>() {
             }.getType();
-            mListAllSong =gson.fromJson(json , type);
-            for(int i=0;i<mListAllSong.size()-1;i++){
-                if(position==mListAllSong.get(i).getId()){
+            mListAllSong = gson.fromJson(json, type);
+
+            for (int i = 0; i <= mListAllSong.size() - 1; i++) {
+                if (position== mListAllSong.get(i).getId()) {
                     mNameSong.setText(mListAllSong.get(i).getTitle());
                     mArtist.setText(mListAllSong.get(i).getArtist());
                     if (!mListAllSong.get(i).getFile().equals(""))
-          if (imageArtist(mListAllSong.get(i).getFile()) != null) {
-                mdisk.setImageBitmap(imageArtist(mListAllSong.get(i).getFile()));
-             } else
-                 mdisk.setImageResource(R.drawable.default_cover_art);
+                        if (imageArtist(mListAllSong.get(i).getFile()) != null) {
+                            mdisk.setImageBitmap(imageArtist(mListAllSong.get(i).getFile()));
+                        } else
+                            mdisk.setImageResource(R.drawable.default_cover_art);
                 }
             }
         }
@@ -167,7 +168,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
                     if (!mMusicService.isMusicPlay()) {
                         mMusicService.playSong(position);
                     }
-
                     mMediaPlaybackFragment.setmMusicService(mMusicService);
                     getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.framentContent, mMediaPlaybackFragment).commit();
                 }
@@ -175,11 +175,11 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         });
 
 
-        ((ActivityMusic)getActivity()).setiConnectActivityAndBaseSong(new ActivityMusic.IConnectActivityAndBaseSong() {
+        ((ActivityMusic) getActivity()).setiConnectActivityAndBaseSong(new ActivityMusic.IConnectActivityAndBaseSong() {
             @Override
             public void connectActivityAndBaseSong() {
-                mMusicService=((ActivityMusic)getActivity()).mMusicService;
-                Log.e("service2", "connectActivityAndBaseSong: "+mMusicService);
+                mMusicService = ((ActivityMusic) getActivity()).mMusicService;
+                // Log.e("service2", "connectActivityAndBaseSong: "+mMusicService.getmNameSong());
                 mAdapter.setmMusicService(mMusicService);
                 updateUI();
                 mMusicService.getListenner(new MediaPlaybackService.Listenner() {
@@ -191,8 +191,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             }
         });
 
-        if(((ActivityMusic)getActivity()).mMusicService!=null){
-            mMusicService=((ActivityMusic)getActivity()).mMusicService;
+        if (((ActivityMusic) getActivity()).mMusicService != null) {
+            mMusicService = ((ActivityMusic) getActivity()).mMusicService;
             updateUI();
             mMusicService.getListenner(new MediaPlaybackService.Listenner() {
                 @Override
@@ -208,7 +208,7 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
 
     public void updateUI() {
         if (mMusicService.isMusicPlay()) {
-            Log.d("notification","ok"+mMusicService.getmNameSong()+"//"+mMusicService.isPlaying());
+            Log.d("notification", "ok" + mMusicService.getmNameSong() + "//" + mMusicService.isPlaying());
             mRecyclerView.scrollToPosition(mMusicService.getmPosition());
             mMusicService.UpdateTime();
             if (mMusicService.isPlaying()) {
@@ -227,8 +227,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
             mArtist.setText(mMusicService.getmArtist());
 
         }
-        if(mAdapter!=null)
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -236,8 +236,6 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         super.onCreateOptionsMenu(menu, inflater);
         inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-//        Log.d("search", Log.getStackTraceString(new Exception()));
-//        Log.d("search", "search");
         MenuItem menuItem = menu.findItem(R.id.app_bar_search);
         SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -256,8 +254,8 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
     }
 
     @Override
-    public void clickItem(Song songs , int position) {
-        Log.d("size",mListAllSong.size()+"//"+position+"///"+mMusicService);
+    public void clickItem(Song songs, int position) {
+        //  Log.d("size",mListAllSong.size()+"//"+position+"///"+mMusicService);
         mMusicService.setmListAllSong(mListAllSong);
         if (mMusicService.isMusicPlay()) {
             mMusicService.pauseSong();
@@ -267,28 +265,28 @@ public class BaseSongListFragment extends Fragment implements MusicAdapter.OnCli
         mNameSong.setText(songs.getTitle());
         mArtist.setText(songs.getArtist());
         ///===========///
-        String selection=" id_provider ="+songs.getId();
+        String selection = " id_provider =" + songs.getId();
         Cursor c = getActivity().managedQuery(mURISong, null, selection, null, null);
-        if(c.moveToFirst()){
-            do{
-               Log.d("ID",c.getString(c.getColumnIndex("id_provider")));
-               if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE))!=1)
-               if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))<2){
-                   ContentValues values = new ContentValues();
-                   values.put(FavoriteSongsProvider.COUNT,c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))+1);
-                   getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+songs.getId(),null);
-                   Log.d("ID",c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT))+"//"+c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
-               }else {
-                   if(c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT))==2) {
-                       ContentValues values = new ContentValues();
-                       values.put(FavoriteSongsProvider.COUNT, 0);
-                       values.put(FavoriteSongsProvider.FAVORITE, 2);
-                       getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + songs.getId(), null);
-                       Log.d("ID1", c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT)) + "//" + c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
-                   }
-               }
+        if (c.moveToFirst()) {
+            do {
+                //Log.d("ID",c.getString(c.getColumnIndex("id_provider")));
+                if (c.getInt(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)) != 1)
+                    if (c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT)) < 2) {
+                        ContentValues values = new ContentValues();
+                        values.put(FavoriteSongsProvider.COUNT, c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT)) + 1);
+                        getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + songs.getId(), null);
+                        //   Log.d("ID",c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT))+"//"+c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
+                    } else {
+                        if (c.getInt(c.getColumnIndex(FavoriteSongsProvider.COUNT)) == 2) {
+                            ContentValues values = new ContentValues();
+                            values.put(FavoriteSongsProvider.COUNT, 0);
+                            values.put(FavoriteSongsProvider.FAVORITE, 2);
+                            getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + songs.getId(), null);
+                            //   Log.d("ID1", c.getString(c.getColumnIndex(FavoriteSongsProvider.COUNT)) + "//" + c.getString(c.getColumnIndex(FavoriteSongsProvider.FAVORITE)));
+                        }
+                    }
 
-            }while(c.moveToNext());
+            } while (c.moveToNext());
 
         }
         Log.d("click :", songs.getTitle() + "//" + songs.getId());

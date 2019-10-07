@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,15 +20,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
-
 import androidx.core.app.NotificationCompat;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -58,8 +54,22 @@ public class MediaPlaybackService extends Service {
     private int mDuration;
     private String mURL = "content://com.bkav.provider";
     private Uri mURISong = Uri.parse(mURL);
-
     private ConnectSeviceFragmentInterface mConnectSeviceFragment2;
+
+    AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener =new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+            // Pause playback
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // Resume playback
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            //am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
+            //am.abandonAudioFocus(afChangeListener);
+            // Stop playback
+        }
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -74,7 +84,7 @@ public class MediaPlaybackService extends Service {
             Type type = new TypeToken<ArrayList<Song>>() {
             }.getType();
             mListAllSong = gson.fromJson(json, type);
-            for (int i = 0; i < mListAllSong.size() - 1; i++) {
+            for (int i = 0; i <= mListAllSong.size() - 1; i++) {//
                 if (mPositionCurrent == mListAllSong.get(i).getId()) {
                     mindex = i;
                     mNameSong = mListAllSong.get(i).getTitle();
@@ -254,19 +264,18 @@ public class MediaPlaybackService extends Service {
         return mMediaPlayer.getDuration();
     }
 
-    public void playSong(int mPositionCurrent) {
-        this.mPositionCurrent= mPositionCurrent;
-        Log.d("mPath1", "well come");
+    public void playSong(int mPosition) {
+        mPositionCurrent= mPosition;
         mMediaPlayer = new MediaPlayer();
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
         }
         try {
-            Log.d("play song", mPositionCurrent + "//" + mListAllSong.size());
+          //  Log.d("play song", mPosition + "//" + mListAllSong.size());
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
-                if (mListAllSong.get(i).getId() == mPositionCurrent) {
+                if (mListAllSong.get(i).getId() == mPosition) {
                     mindex = i;
-                    Log.d("mPath", mListAllSong.get(i).getFile());
+                   // Log.d("mPath", mListAllSong.get(i).getFile());
                     Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
                     mMediaPlayer.setDataSource(getApplicationContext(), content_uri);
                     mMediaPlayer.prepare();
@@ -278,6 +287,7 @@ public class MediaPlaybackService extends Service {
                     mNameSong = mListAllSong.get(i).getTitle();
                     mArtist = mListAllSong.get(i).getArtist();
                     mDuration = mMediaPlayer.getDuration();
+
                     showNotification(mListAllSong.get(i).getTitle(), mListAllSong.get(i).getArtist(), mPath);
                     if(mListenner!=null)
                     mListenner.onItemListenner();
@@ -288,15 +298,11 @@ public class MediaPlaybackService extends Service {
             e.printStackTrace();
         }
         ///SharedPreferences
-
         mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharePreferences.edit();
-        editor.putInt("position", getmPosition());
+        editor.putInt("position", this.mPositionCurrent);
         editor.putInt("mLoopSong", mLoopSong);
         editor.putBoolean("mShuffleSong", mShuffleSong);
-//        editor.putString("path", mPath);
-//        editor.putInt("duration", getDurationSong());
-//        editor.commit();
         Gson gson = new Gson();
         String json = gson.toJson(mListAllSong);
         editor.putString("Songs", json);
@@ -436,8 +442,23 @@ public class MediaPlaybackService extends Service {
         return null;
     }
 
+//=============focus
+   private AudioManager.OnAudioFocusChangeListener afChangeListener;
 
 
+    public  void focusSevice() {
+        AudioManager audioManager = (AudioManager) getApplication().getSystemService(Context.AUDIO_SERVICE);
+
+        int res = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, // Music streaming
+                AudioManager.AUDIOFOCUS_GAIN); // Permanent focus
+
+        if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            // Play the audio
+            playSong(mPositionCurrent);
+        }
+    }
+
+//==============
     @Override
     public IBinder onBind(Intent intent) {
         return binder;

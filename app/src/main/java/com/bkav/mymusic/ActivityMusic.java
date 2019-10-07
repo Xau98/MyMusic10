@@ -140,6 +140,8 @@ public class ActivityMusic extends AppCompatActivity
     }
 
 
+
+
     //    @Override
 //    public void onConfigurationChanged(@NonNull Configuration newConfig) {
 //        super.onConfigurationChanged(newConfig);
@@ -237,7 +239,6 @@ public class ActivityMusic extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_favorite) {
             Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
             mStatus=true;
