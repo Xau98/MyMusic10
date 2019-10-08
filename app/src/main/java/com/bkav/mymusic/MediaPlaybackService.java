@@ -59,17 +59,18 @@ public class MediaPlaybackService extends Service {
     private Uri mURISong = Uri.parse(mURL);
     private ConnectSeviceFragmentInterface mConnectSeviceFragment2;
 
-    AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+    private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 // Pause playback
+                mMediaPlayer.pause();
+                showNotification(mNameSong,mArtist, mPath);
             } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                // Resume playback
+                mMediaPlayer.start();
+                showNotification(mNameSong,mArtist, mPath);
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                //am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
-                //am.abandonAudioFocus(afChangeListener);
-                // Stop playback
+              playingSong();
             }
         }
     };
@@ -279,14 +280,13 @@ public class MediaPlaybackService extends Service {
             for (int i = 0; i <= mListAllSong.size() - 1; i++) {
                 if (mListAllSong.get(i).getId() == mPosition) {
                     mindex = i;
-                    // Log.d("mPath", mListAllSong.get(i).getFile());
                     Uri content_uri = Uri.parse(mListAllSong.get(i).getFile());
                     mMediaPlayer.setDataSource(getApplicationContext(), content_uri);
                     mMediaPlayer.prepare();
                     mMediaPlayer.setWakeMode(getApplicationContext(),
                             PowerManager.PARTIAL_WAKE_LOCK);
                     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    mMediaPlayer.start();
+                    focusSevice();
                     mPath = mListAllSong.get(i).getFile();
                     mNameSong = mListAllSong.get(i).getTitle();
                     mArtist = mListAllSong.get(i).getArtist();
@@ -329,7 +329,7 @@ public class MediaPlaybackService extends Service {
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
         } else {
-            mMediaPlayer.start();
+          focusSevice();
         }
         if (mListenner != null) {
             mListenner.onItemListenner();
@@ -400,25 +400,8 @@ public class MediaPlaybackService extends Service {
         return false;
     }
 
-    public void UpdateTime() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer media) {
-                        onCompletionSong();
-                    }
-                });
-                handler.postDelayed(this, 500);
-            }
-        }, 100);
-    }
-
     public void onCompletionSong() {
         mMediaPlayer.pause();
-
         if (mLoopSong == 0) {
             if (mShuffleSong == true) {
                 mindex = actionShuffleSong();
@@ -426,13 +409,11 @@ public class MediaPlaybackService extends Service {
                 playSong(mPositionCurrent);
             } else {
                 if (mindex < mListAllSong.size() - 1) {
-                    Log.d("lap0", mListAllSong.size()+"lap" + mindex);
                     mindex++;
                     mPositionCurrent = mListAllSong.get(mindex).getId();
                     playSong(mPositionCurrent);
                 }
                 if(mindex == mListAllSong.size() - 1){
-                    Log.d("lap0", mListAllSong.size()+"lap" + mindex);
                     mMediaPlayer.pause();
                 }
             }
@@ -454,32 +435,9 @@ public class MediaPlaybackService extends Service {
             playSong(mPositionCurrent);
         }
 
-        //  mListenner.actionNotification();
-//        if (mShuffleSong == true) {
-//            mindex = actionShuffleSong();
-//            mPositionCurrent = mListAllSong.get(mindex).getId();
-//            playSong(mPositionCurrent);
-//        } else {
-//            if (mindex == mListAllSong.size() - 1)
-//                mindex = 0;
-//            else
-//                mindex++;
-//            if (mShuffleSong == true) {
-//                mindex = actionShuffleSong();
-//            } else {
-//                if (mindex == mListAllSong.size() - 1)
-//                    mindex = 0;
-//                else
-//                    mindex++;
-//            }
-//            mPositionCurrent = mListAllSong.get(mindex).getId();
-//            playSong(mPositionCurrent);
-//        }
-
     }
 
     public Bitmap imageArtist(String path) {
-        Log.d("path", path + "//");
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);
         byte[] data = mediaMetadataRetriever.getEmbeddedPicture();
@@ -492,16 +450,12 @@ public class MediaPlaybackService extends Service {
     //=============focus
     public void focusSevice() {
         AudioManager audioManager = (AudioManager) getApplication().getSystemService(Context.AUDIO_SERVICE);
-
         int res = audioManager.requestAudioFocus(mAudioFocusChangeListener, AudioManager.STREAM_MUSIC, // Music streaming
                 AudioManager.AUDIOFOCUS_GAIN); // Permanent focus
-
         if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            // Play the audio
-            //  playSong(mPositionCurrent);
+           mMediaPlayer.start();
         }
     }
-
     //==============
     @Override
     public IBinder onBind(Intent intent) {

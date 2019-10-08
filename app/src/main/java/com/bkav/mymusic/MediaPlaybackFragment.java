@@ -322,6 +322,14 @@ public class MediaPlaybackFragment extends Fragment {
                 updateUI();
             }
         });
+
+        btMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
        updateUI();
         return view;
     }
