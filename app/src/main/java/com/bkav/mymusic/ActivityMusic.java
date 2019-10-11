@@ -20,6 +20,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import android.view.MenuItem;
 
+import com.bkav.mymusic.Online.SongOnlineFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -43,7 +44,7 @@ public class ActivityMusic extends AppCompatActivity
     private SharedPreferences mSharePreferences;
     private String SHARED_PREFERENCES_NAME = "com.bkav.mymusic";
     private  ArrayList<Song> mListAllSong =new ArrayList<>();
-
+    private SongOnlineFragment mSongOnlineFragment =new SongOnlineFragment();
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -138,9 +139,6 @@ public class ActivityMusic extends AppCompatActivity
             connectService();
         }
     }
-
-
-
 
     //    @Override
 //    public void onConfigurationChanged(@NonNull Configuration newConfig) {
@@ -252,7 +250,11 @@ public class ActivityMusic extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mAllSongsFragment).commit();
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-        }
+        }else
+            if (id== R.id.nav_onlinelist){
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.framentContent, mSongOnlineFragment).commit();
+            }
         return true;
     }
 

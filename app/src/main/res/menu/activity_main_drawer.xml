@@ -12,6 +12,10 @@
             android:id="@+id/nav_playlist"
             android:icon="@drawable/ic_playlist_play_black_24dp"
             android:title="List Music" />
+        <item
+            android:id="@+id/nav_onlinelist"
+            android:icon="@drawable/ic_playlist_play_black_24dp"
+            android:title="List Online" />
 
 
     </group>

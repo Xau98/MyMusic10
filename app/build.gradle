@@ -35,7 +35,18 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
     androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 
+
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    dependencies {
+        compile 'me.relex:circleindicator:1.2.2@aar'
+    }
+    dependencies {
+        compile 'com.eftimoff:android-viewpager-transformers:1.0.1@aar'
+    }
 
 }
+
